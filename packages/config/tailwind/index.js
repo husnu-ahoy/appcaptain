@@ -1,5 +1,5 @@
 /**
- * Shared Tailwind preset for all GetYourBoat frontends.
+ * Shared Tailwind preset for all Ahoy frontends.
  *
  * Design system: GetYourGuide-inspired. This preset is the single source of
  * truth for color, typography, spacing, radius and breakpoints. See

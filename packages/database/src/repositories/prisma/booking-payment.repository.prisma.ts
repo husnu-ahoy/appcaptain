@@ -2,7 +2,7 @@ import {
   BookingPaymentStatus,
   type BookingPaymentListQuery,
   type BookingPaymentStats,
-} from "@getyourboat/shared";
+} from "@ahoy/shared";
 import { prisma } from "../../client.js";
 import type {
   BookingPaymentRepository,

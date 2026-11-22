@@ -6,7 +6,7 @@ import { fileURLToPath } from "node:url";
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const monorepoRoot = join(root, "../..");
 
-execSync("pnpm --filter @getyourboat/database db:generate", {
+execSync("pnpm --filter @ahoy/database db:generate", {
   cwd: monorepoRoot,
   stdio: "inherit",
 });
@@ -21,8 +21,8 @@ await esbuild.build({
   logLevel: "info",
   external: ["bcryptjs"],
   alias: {
-    "@getyourboat/shared": join(monorepoRoot, "packages/shared/dist/index.js"),
+    "@ahoy/shared": join(monorepoRoot, "packages/shared/dist/index.js"),
   },
 });
 
-console.log("Built @getyourboat/database -> dist/index.cjs");
+console.log("Built @ahoy/database -> dist/index.cjs");

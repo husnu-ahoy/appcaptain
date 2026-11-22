@@ -4,12 +4,12 @@ import { use, useEffect, useMemo, useState } from "react";
 import {
   BoatDetailView,
   BoatPreviewBanner,
-} from "@getyourboat/ui";
+} from "@ahoy/ui";
 import {
   calculateWizardListingScore,
   deriveCompletedWizardSteps,
   toBoatDetailViewModel,
-} from "@getyourboat/shared";
+} from "@ahoy/shared";
 import { useAuth } from "../../../../components/auth-provider";
 import { Protected } from "../../../../components/protected";
 import { Alert, Spinner } from "../../../../components/ui";

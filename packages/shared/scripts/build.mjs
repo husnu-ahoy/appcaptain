@@ -14,4 +14,4 @@ await esbuild.build({
   logLevel: "info",
 });
 
-console.log("Built @getyourboat/shared -> dist/index.js");
+console.log("Built @ahoy/shared -> dist/index.js");

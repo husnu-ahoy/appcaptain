@@ -18,4 +18,4 @@ export type {
   SerializedBoatDTO as SerializedBoat,
   BoatListItemDTO as BoatListItem,
   UploadUrlDTO as UploadUrlResponse,
-} from "@getyourboat/shared";
+} from "@ahoy/shared";

@@ -1,5 +1,5 @@
-import { GuestSenderType } from "@getyourboat/shared";
-import { guestConversationRepository } from "@getyourboat/database";
+import { GuestSenderType } from "@ahoy/shared";
+import { guestConversationRepository } from "@ahoy/database";
 import { notFound } from "../../../lib/errors.js";
 
 export function listConversations(captainId: string) {

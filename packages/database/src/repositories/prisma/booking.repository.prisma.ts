@@ -1,12 +1,32 @@
 import type {
   BookingListQuery,
   CreateBookingInput,
-} from "@getyourboat/shared";
-import { BookingStatus } from "@getyourboat/shared";
+} from "@ahoy/shared";
+import { BookingStatus } from "@ahoy/shared";
 import { Prisma } from "../../client.js";
 import { prisma } from "../../client.js";
-import type { BookingRepository } from "../booking.repository.js";
+import type {
+  ApproveBookingResult,
+  BookingRepository,
+  CreateBookingResult,
+} from "../booking.repository.js";
 import { toBookingDTO } from "../booking.repository.js";
+
+/** Overlap test used everywhere: dates are inclusive, as in the original check. */
+function overlapping(boatId: string, startDate: Date, endDate: Date) {
+  return {
+    boatId,
+    AND: [{ startDate: { lte: endDate } }, { endDate: { gte: startDate } }],
+  } satisfies Prisma.BookingWhereInput;
+}
+
+/**
+ * Serialises booking writes per boat: concurrent transactions for the same
+ * boat wait here until the first one commits. Parameterised, no raw input.
+ */
+async function lockBoat(tx: Prisma.TransactionClient, boatId: string) {
+  await tx.$queryRaw`SELECT "id" FROM "boats" WHERE "id" = ${boatId} FOR UPDATE`;
+}
 
 const includeBoat = {
   boat: {
@@ -28,35 +48,42 @@ const ACTIVE_STATUSES = [BookingStatus.PENDING, BookingStatus.APPROVED];
 export class PrismaBookingRepository implements BookingRepository {
   async findConflict(boatId: string, startDate: Date, endDate: Date) {
     const row = await prisma.booking.findFirst({
-      where: {
-        boatId,
-        status: { in: ACTIVE_STATUSES },
-        AND: [{ startDate: { lte: endDate } }, { endDate: { gte: startDate } }],
-      },
+      where: { ...overlapping(boatId, startDate, endDate), status: { in: ACTIVE_STATUSES } },
       select: { startDate: true, endDate: true },
     });
     return row ?? null;
   }
 
-  async create(input: CreateBookingInput, captainId: string) {
-    const row = await prisma.booking.create({
-      data: {
-        boatId: input.boatId,
-        captainId,
-        guestName: input.guestName,
-        guestEmail: input.guestEmail,
-        guestPhone: input.guestPhone ?? null,
-        guestCount: input.guestCount,
-        rentalType: input.rentalType,
-        startDate: new Date(input.startDate),
-        endDate: new Date(input.endDate),
-        startTime: input.startTime ?? null,
-        endTime: input.endTime ?? null,
-        message: input.message ?? null,
-      },
-      include: includeBoat,
+  async createIfAvailable(input: CreateBookingInput, captainId: string): Promise<CreateBookingResult> {
+    const startDate = new Date(input.startDate);
+    const endDate = new Date(input.endDate);
+    return prisma.$transaction(async (tx) => {
+      await lockBoat(tx, input.boatId);
+      const clash = await tx.booking.findFirst({
+        where: { ...overlapping(input.boatId, startDate, endDate), status: { in: ACTIVE_STATUSES } },
+        select: { startDate: true, endDate: true },
+      });
+      if (clash) return { ok: false as const, conflict: clash };
+
+      const row = await tx.booking.create({
+        data: {
+          boatId: input.boatId,
+          captainId,
+          guestName: input.guestName,
+          guestEmail: input.guestEmail,
+          guestPhone: input.guestPhone ?? null,
+          guestCount: input.guestCount,
+          rentalType: input.rentalType,
+          startDate,
+          endDate,
+          startTime: input.startTime ?? null,
+          endTime: input.endTime ?? null,
+          message: input.message ?? null,
+        },
+        include: includeBoat,
+      });
+      return { ok: true as const, booking: toBookingDTO(row) };
     });
-    return toBookingDTO(row);
   }
 
   async getById(id: string) {
@@ -96,25 +123,57 @@ export class PrismaBookingRepository implements BookingRepository {
     };
   }
 
-  async approve(id: string, totalPrice?: number | null) {
-    const row = await prisma.booking.update({
-      where: { id },
-      data: {
-        status: BookingStatus.APPROVED,
-        ...(totalPrice != null ? { totalPrice } : {}),
-      },
-      include: includeBoat,
+  async approveIfPending(id: string, totalPrice?: number | null): Promise<ApproveBookingResult> {
+    return prisma.$transaction(async (tx) => {
+      const current = await tx.booking.findUnique({
+        where: { id },
+        select: { boatId: true, startDate: true, endDate: true },
+      });
+      if (!current) return { ok: false as const, reason: "not_found" as const };
+
+      await lockBoat(tx, current.boatId);
+      const clash = await tx.booking.findFirst({
+        where: {
+          ...overlapping(current.boatId, current.startDate, current.endDate),
+          id: { not: id },
+          status: BookingStatus.APPROVED,
+        },
+        select: { startDate: true, endDate: true },
+      });
+      if (clash) return { ok: false as const, reason: "conflict" as const, conflict: clash };
+
+      // Conditional transition: a REJECTED/CANCELLED booking can no longer be approved.
+      const { count } = await tx.booking.updateMany({
+        where: { id, status: BookingStatus.PENDING },
+        data: {
+          status: BookingStatus.APPROVED,
+          ...(totalPrice != null ? { totalPrice } : {}),
+        },
+      });
+      if (count === 0) return { ok: false as const, reason: "not_pending" as const };
+
+      const row = await tx.booking.findUniqueOrThrow({ where: { id }, include: includeBoat });
+      return { ok: true as const, booking: toBookingDTO(row) };
     });
+  }
+
+  async rejectIfOpen(id: string, rejectionNote?: string | null) {
+    // APPROVED stays rejectable: the captain panel uses "reject" to cancel an accepted request.
+    const { count } = await prisma.booking.updateMany({
+      where: { id, status: { in: ACTIVE_STATUSES } },
+      data: { status: BookingStatus.REJECTED, rejectionNote: rejectionNote ?? null },
+    });
+    if (count === 0) return null;
+    const row = await prisma.booking.findUniqueOrThrow({ where: { id }, include: includeBoat });
     return toBookingDTO(row);
   }
 
-  async reject(id: string, rejectionNote?: string | null) {
-    const row = await prisma.booking.update({
-      where: { id },
-      data: { status: BookingStatus.REJECTED, rejectionNote: rejectionNote ?? null },
-      include: includeBoat,
+  async getBoatForBooking(boatId: string) {
+    const boat = await prisma.boat.findUnique({
+      where: { id: boatId },
+      select: { ownerId: true, status: true },
     });
-    return toBookingDTO(row);
+    return boat ? { ownerId: boat.ownerId, status: String(boat.status) } : null;
   }
 
   async getBoatCaptainId(boatId: string) {

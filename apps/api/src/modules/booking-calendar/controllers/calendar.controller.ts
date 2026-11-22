@@ -4,7 +4,7 @@ import {
   priceOverrideSchema,
   type CreateBlockInput,
   type SetPriceOverrideInput,
-} from "@getyourboat/shared";
+} from "@ahoy/shared";
 import { badRequest } from "../../../lib/errors.js";
 import { parseDetailed } from "../../../lib/validate.js";
 import * as service from "../services/calendar.service.js";

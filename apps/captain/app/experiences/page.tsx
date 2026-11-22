@@ -3,8 +3,8 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import type { ExperienceListItemDTO } from "@getyourboat/shared";
-import { ExperienceStatus } from "@getyourboat/shared";
+import type { ExperienceListItemDTO } from "@ahoy/shared";
+import { ExperienceStatus } from "@ahoy/shared";
 import {
   Button,
   FontAwesomeIcon,
@@ -16,7 +16,7 @@ import {
   faStar,
   faTrash,
   faUsers,
-} from "@getyourboat/ui";
+} from "@ahoy/ui";
 import { AppShell } from "../../components/layout/AppShell";
 import { api, ApiError } from "../../lib/api";
 import { EXPERIENCE_CATEGORY_LABELS, EXPERIENCE_STATUS_LABELS } from "../../lib/experience";

@@ -1,5 +1,5 @@
-import { conversationRepository } from "@getyourboat/database";
-import { MessageSenderType } from "@getyourboat/shared";
+import { conversationRepository } from "@ahoy/database";
+import { MessageSenderType } from "@ahoy/shared";
 import { forbidden, notFound, badRequest } from "../../../lib/errors.js";
 import { assertSendRateLimit } from "../../../lib/rate-limit.js";
 import { sanitizeMessageBody } from "../../../lib/sanitize.js";

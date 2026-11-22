@@ -1,4 +1,5 @@
-import { prisma, boatRepository, experienceRepository, toExperienceListItem, type Prisma } from "@getyourboat/database";
+import { prisma, boatRepository, experienceRepository, toExperienceListItem, type Prisma } from "@ahoy/database";
+import { toPublicBoat, toPublicExperience, toPublicExperienceListItem } from "../public-projection.js";
 
 /**
  * Public (unauthenticated) read models. These intentionally re-shape data for
@@ -140,7 +141,7 @@ export async function listPublicBoats(query: PublicBoatListQuery) {
 export async function getPublicBoat(id: string) {
   const boat = await boatRepository.getState(id);
   if (!boat || boat.status !== "ACTIVE") return null;
-  return { ...boat, owner: await getPublicOwner(boat.ownerId) };
+  return { ...toPublicBoat(boat), owner: await getPublicOwner(boat.ownerId) };
 }
 
 /** İlan sahibinin herkese açık bilgisi — yalnızca ilk ad (soyad paylaşılmaz). */
@@ -220,11 +221,11 @@ export async function listPublicExperiences(query: PublicExperienceListQuery) {
     prisma.experience.count({ where }),
   ]);
 
-  return { items: rows.map(toExperienceListItem), total };
+  return { items: rows.map((row) => toPublicExperienceListItem(toExperienceListItem(row), row)), total };
 }
 
 export async function getPublicExperience(id: string) {
   const experience = await experienceRepository.getById(id);
   if (!experience || experience.status !== "ACTIVE") return null;
-  return experience;
+  return toPublicExperience(experience);
 }

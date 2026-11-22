@@ -1,6 +1,6 @@
 "use client";
 
-import { FontAwesomeIcon, cn, faMinus, faPlus } from "@getyourboat/ui";
+import { FontAwesomeIcon, cn, faMinus, faPlus } from "@ahoy/ui";
 
 /**
  * +/- adjustable numeric input for count fields (kapasite, kabin, mürettebat,

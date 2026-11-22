@@ -13,15 +13,15 @@ import {
   faArrowLeft,
   faArrowRight,
   faTrash,
-} from "@getyourboat/ui";
+} from "@ahoy/ui";
 import {
   BlockReason,
   BookingModel,
-} from "@getyourboat/shared";
+} from "@ahoy/shared";
 import type {
   BlockResponseDTO,
   MockReservationDTO,
-} from "@getyourboat/shared";
+} from "@ahoy/shared";
 import { useAuth } from "../../components/auth-provider";
 import { AppShell } from "../../components/layout/AppShell";
 import { api, ApiError } from "../../lib/api";

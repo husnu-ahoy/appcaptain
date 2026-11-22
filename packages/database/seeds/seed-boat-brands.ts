@@ -1,6 +1,6 @@
 /**
  * Upserts boat brands/models from boat-brands.json (idempotent).
- * Run: pnpm --filter @getyourboat/database seed:boat-brands
+ * Run: pnpm --filter @ahoy/database seed:boat-brands
  */
 import { readFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";

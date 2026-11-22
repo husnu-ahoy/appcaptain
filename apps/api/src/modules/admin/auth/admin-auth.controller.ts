@@ -1,7 +1,7 @@
 import type { FastifyInstance } from "fastify";
 import bcrypt from "bcryptjs";
 import { z } from "zod";
-import { prisma } from "@getyourboat/database";
+import { prisma } from "@ahoy/database";
 import {
   signAdminToken,
   revokeAdminToken,
@@ -85,7 +85,7 @@ export async function adminAuthRoutes(app: FastifyInstance) {
     const token = signAdminToken({
       id: admin.id,
       email: admin.email,
-      role: admin.role as import("@getyourboat/shared").AdminRole,
+      role: admin.role as import("@ahoy/shared").AdminRole,
     });
 
     reply.setCookie(ADMIN_TOKEN_COOKIE, token, {

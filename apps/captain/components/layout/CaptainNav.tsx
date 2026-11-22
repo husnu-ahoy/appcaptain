@@ -30,8 +30,8 @@ import {
   faWallet,
   faXmark,
   type IconDefinition,
-} from "@getyourboat/ui";
-import { BookingStatus } from "@getyourboat/shared";
+} from "@ahoy/ui";
+import { BookingStatus } from "@ahoy/shared";
 import { useAuth } from "../auth-provider";
 import { api, ApiError } from "../../lib/api";
 import { useProfile } from "../../lib/hooks";
@@ -77,7 +77,7 @@ const SECONDARY: NavLink[] = [
   { key: "legal", label: "Yasal", href: "/legal", icon: faScaleBalanced },
 ];
 
-const SUPPORT_MAIL = "mailto:destek@getyourboat.com?subject=Ahoy%20Kaptan%20Destek";
+const SUPPORT_MAIL = "mailto:destek@ahoyboats.com?subject=Ahoy%20Kaptan%20Destek";
 
 /** Rozet sayıları; kritik değil, hatalar sessizce yok sayılır. */
 function useNavCounts(enabled: boolean) {

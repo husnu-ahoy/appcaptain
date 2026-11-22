@@ -1,5 +1,5 @@
 import type { Config } from "tailwindcss";
-import preset from "@getyourboat/config/tailwind";
+import preset from "@ahoy/config/tailwind";
 
 const config: Config = {
   presets: [preset as unknown as Config],

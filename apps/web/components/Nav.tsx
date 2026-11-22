@@ -8,8 +8,25 @@ import type { User } from '@supabase/supabase-js'
 import { supabase } from '@/lib/supabase'
 import AuthModal from '@/components/auth/AuthModal'
 import RangeCalendar, { type DateRangeValue } from '@/components/sh/RangeCalendar'
-import { CalendarDays, CircleUserRound, MapPin, Menu, Minus, Plus, Search, Users } from 'lucide-react'
+import {
+  Anchor,
+  CalendarDays,
+  CircleUserRound,
+  Heart,
+  LifeBuoy,
+  LogOut,
+  Luggage,
+  MapPin,
+  Menu,
+  MessageSquare,
+  Minus,
+  Plus,
+  Search,
+  Settings,
+  Users,
+} from 'lucide-react'
 import { Logo } from '@/components/home/Logo'
+import { displayName, initials } from '@/lib/account'
 
 const CAPTAIN_APP_URL = process.env.NEXT_PUBLIC_CAPTAIN_URL ?? 'https://appcaptain-captain.vercel.app'
 
@@ -49,6 +66,12 @@ const USER_MENU_DISCOVER = [
   { href: '/#map-section', label: 'Rota Haritası' },
   { href: '/kaptanlar', label: 'Kaptanlar' },
   { href: '/cashback', label: 'Cashback Programı' },
+]
+/** Giriş yapmış müşterinin hesap bağlantıları (menünün üstünde, ikonlu). */
+const USER_MENU_ACCOUNT = [
+  { href: '/favorilerim', label: 'Favoriler', icon: Heart },
+  { href: '/mesajlarim', label: 'Mesajlar', icon: MessageSquare },
+  { href: '/rezervasyonlarim', label: 'Rezervasyonlarım', icon: Luggage },
 ]
 
 /** Header yüksekliği; sayfadaki büyük arama bunun altına kayınca kompakt arama görünür. */
@@ -249,9 +272,9 @@ export default function Nav({ logoUrl = null, locationSuggestions = DEFAULT_SUGG
                 aria-label="Kullanıcı menüsü"
               >
                 <Menu size={26} strokeWidth={2} aria-hidden="true" />
-                {user?.email ? (
+                {user ? (
                   <span className="sh-menu-avatar" aria-hidden="true">
-                    {user.email.charAt(0).toUpperCase()}
+                    {initials(user)}
                   </span>
                 ) : (
                   <CircleUserRound size={30} strokeWidth={1.8} aria-hidden="true" />
@@ -260,66 +283,73 @@ export default function Nav({ logoUrl = null, locationSuggestions = DEFAULT_SUGG
 
               {userMenuOpen && (
                 <div className="nav-user-dropdown" role="menu" aria-label="Kullanıcı menüsü">
-                  <div className="nav-ud-section">
-                    {user ? (
-                      <>
-                        <div className="nav-ud-item nav-ud-item--email" role="none">
-                          {user.email}
-                        </div>
-                        <Link href="/hesabim" className="nav-ud-item" role="menuitem" onClick={() => setUserMenuOpen(false)}>
-                          Hesabım
+                  {user ? (
+                    <>
+                      <div className="nav-ud-me" role="none">
+                        <span className="nav-ud-me-ava" aria-hidden="true">
+                          {initials(user)}
+                        </span>
+                        <span>
+                          <b>{displayName(user)}</b>
+                          {user.email && <small>{user.email}</small>}
+                        </span>
+                      </div>
+                      <div className="nav-ud-divider" aria-hidden="true" />
+                      <div className="nav-ud-section">
+                        {USER_MENU_ACCOUNT.map(({ href, label, icon: Icon }) => (
+                          <Link
+                            key={href}
+                            href={href}
+                            className={`nav-ud-item nav-ud-item--icon nav-ud-item--bold${pathname === href ? ' is-current' : ''}`}
+                            role="menuitem"
+                            onClick={() => setUserMenuOpen(false)}
+                          >
+                            <Icon size={20} strokeWidth={1.7} aria-hidden="true" />
+                            {label}
+                          </Link>
+                        ))}
+                      </div>
+                      <div className="nav-ud-divider" aria-hidden="true" />
+                      <div className="nav-ud-section">
+                        <Link href="/hesabim" className="nav-ud-item nav-ud-item--icon" role="menuitem" onClick={() => setUserMenuOpen(false)}>
+                          <Settings size={20} strokeWidth={1.7} aria-hidden="true" />
+                          Hesap ayarları
                         </Link>
-                        <Link href="/rezervasyonlarim" className="nav-ud-item" role="menuitem" onClick={() => setUserMenuOpen(false)}>
-                          Rezervasyonlarım
-                        </Link>
-                        <Link href="/mesajlarim" className="nav-ud-item" role="menuitem" onClick={() => setUserMenuOpen(false)}>
-                          Mesajlarım
-                        </Link>
-                        <Link href="/hesabim#favoriler" className="nav-ud-item" role="menuitem" onClick={() => setUserMenuOpen(false)}>
-                          Favorilerim
-                        </Link>
-                        <button
-                          type="button"
-                          className="nav-ud-item nav-ud-item--button"
-                          role="menuitem"
-                          onClick={() => {
-                            setUserMenuOpen(false)
-                            void supabase.auth.signOut()
-                          }}
-                        >
-                          Çıkış yap
-                        </button>
-                      </>
-                    ) : (
-                      <>
-                        <button
-                          type="button"
-                          className="nav-ud-item nav-ud-item--button nav-ud-item--bold"
-                          role="menuitem"
-                          onClick={() => {
-                            setUserMenuOpen(false)
-                            setAuthModalMode('signin')
-                          }}
-                        >
-                          Giriş yap
-                        </button>
-                        <button
-                          type="button"
-                          className="nav-ud-item nav-ud-item--button"
-                          role="menuitem"
-                          onClick={() => {
-                            setUserMenuOpen(false)
-                            setAuthModalMode('signup')
-                          }}
-                        >
-                          Kayıt ol
-                        </button>
-                      </>
-                    )}
-                    <a href={CAPTAIN_APP_URL} className="nav-ud-item nav-ud-item--bold" role="menuitem" onClick={() => setUserMenuOpen(false)}>
-                      Kaptan Paneli
-                    </a>
-                  </div>
+                        <a href={CAPTAIN_APP_URL} className="nav-ud-item nav-ud-item--icon" role="menuitem" onClick={() => setUserMenuOpen(false)}>
+                          <Anchor size={20} strokeWidth={1.7} aria-hidden="true" />
+                          Kaptan Paneli
+                        </a>
+                      </div>
+                    </>
+                  ) : (
+                    <div className="nav-ud-section">
+                      <button
+                        type="button"
+                        className="nav-ud-item nav-ud-item--button nav-ud-item--bold"
+                        role="menuitem"
+                        onClick={() => {
+                          setUserMenuOpen(false)
+                          setAuthModalMode('signin')
+                        }}
+                      >
+                        Giriş yap
+                      </button>
+                      <button
+                        type="button"
+                        className="nav-ud-item nav-ud-item--button"
+                        role="menuitem"
+                        onClick={() => {
+                          setUserMenuOpen(false)
+                          setAuthModalMode('signup')
+                        }}
+                      >
+                        Kayıt ol
+                      </button>
+                      <a href={CAPTAIN_APP_URL} className="nav-ud-item nav-ud-item--bold" role="menuitem" onClick={() => setUserMenuOpen(false)}>
+                        Kaptan Paneli
+                      </a>
+                    </div>
+                  )}
                   <div className="nav-ud-divider" aria-hidden="true" />
                   <div className="nav-ud-section">
                     {USER_MENU_PAGES.map(item => (
@@ -335,10 +365,30 @@ export default function Nav({ logoUrl = null, locationSuggestions = DEFAULT_SUGG
                         {item.label}
                       </Link>
                     ))}
-                    <Link href="#" className="nav-ud-item" role="menuitem" onClick={() => setUserMenuOpen(false)}>
-                      Yardım Merkezi
+                    <Link href="/hakkimizda#iletisim" className="nav-ud-item nav-ud-item--icon" role="menuitem" onClick={() => setUserMenuOpen(false)}>
+                      <LifeBuoy size={20} strokeWidth={1.7} aria-hidden="true" />
+                      Yardım ve iletişim
                     </Link>
                   </div>
+                  {user && (
+                    <>
+                      <div className="nav-ud-divider" aria-hidden="true" />
+                      <div className="nav-ud-section">
+                        <button
+                          type="button"
+                          className="nav-ud-item nav-ud-item--button nav-ud-item--icon"
+                          role="menuitem"
+                          onClick={() => {
+                            setUserMenuOpen(false)
+                            void supabase.auth.signOut()
+                          }}
+                        >
+                          <LogOut size={20} strokeWidth={1.7} aria-hidden="true" />
+                          Çıkış yap
+                        </button>
+                      </div>
+                    </>
+                  )}
                 </div>
               )}
             </div>

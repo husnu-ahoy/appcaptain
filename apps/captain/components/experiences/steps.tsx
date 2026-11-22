@@ -16,8 +16,8 @@ import {
   ExperienceProductType,
   ExperienceStep,
   ValidationFieldError,
-} from "@getyourboat/shared";
-import { Button, cn, FontAwesomeIcon, faTrash, faXmark, LocationPicker } from "@getyourboat/ui";
+} from "@ahoy/shared";
+import { Button, cn, FontAwesomeIcon, faTrash, faXmark, LocationPicker } from "@ahoy/ui";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 import { api, ApiError, uploadToStorage } from "../../lib/api";

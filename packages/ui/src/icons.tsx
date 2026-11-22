@@ -1,8 +1,8 @@
 /**
- * Single source of truth for icons across all GetYourBoat frontends.
+ * Single source of truth for icons across all Ahoy frontends.
  *
  * Icon library: Font Awesome Free. Screens must import icons + the renderer
- * from "@getyourboat/ui", never directly from @fortawesome/*.
+ * from "@ahoy/ui", never directly from @fortawesome/*.
  *
  * `autoAddCss = false` disables Font Awesome's runtime CSS injection; apps
  * import "@fortawesome/fontawesome-svg-core/styles.css" once in their layout

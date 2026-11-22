@@ -1,12 +1,12 @@
 import { randomUUID } from "node:crypto";
-import { experienceRepository } from "@getyourboat/database";
+import { experienceRepository } from "@ahoy/database";
 import {
   ExperienceStatus,
   ExperienceStep,
   computeExperienceProgress,
   experienceSchema,
   type CustomerInfoFieldType,
-} from "@getyourboat/shared";
+} from "@ahoy/shared";
 import { badRequest, forbidden, notFound } from "../../../lib/errors.js";
 import { sanitizeStorageFileName } from "../../../lib/sanitize.js";
 import {
@@ -61,7 +61,7 @@ export async function updateStep(
   const exp = await getOwnedOrThrow(id, captainId);
   assertEditableStatus(exp.status);
 
-  await experienceRepository.updateFields(id, data as import("@getyourboat/database").ExperienceWriteBase);
+  await experienceRepository.updateFields(id, data as import("@ahoy/database").ExperienceWriteBase);
   await markStepComplete(id, step, exp.progress.completedSteps);
   await maybeResetReview(id, exp.status);
   const next = await experienceRepository.getOwned(id, captainId);

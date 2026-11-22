@@ -17,8 +17,8 @@ const MAX_PHOTOS = 5
  * rozetler, favori kalbi, marka · yıl · şehir satırı, özellik etiketleri,
  * kapasite satırı ve fiyat alanı.
  */
-export default function BoatListCard({ boat }: { boat: PublicBoatSummary }) {
-  const href = `/listing/${boat.id}`
+export default function BoatListCard({ boat, query }: { boat: PublicBoatSummary; /** ör. "start=2026-11-29&end=2026-12-03" */ query?: string }) {
+  const href = `/listing/${boat.id}${query ? `?${query}` : ''}`
   const title = cleanText(boat.title ?? 'İsimsiz tekne')
   const price = lowestPrice(boat.pricing)
   const type = boatTypeLabel(boat.boatType)

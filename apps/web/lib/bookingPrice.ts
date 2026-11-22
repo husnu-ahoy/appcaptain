@@ -70,7 +70,8 @@ export interface CheckoutParams {
   endTime: string | null
 }
 
-const parseDate = (v: string | null | undefined) => {
+/** "2026-11-29" → yerel tarih (geçersizse null). Adres çubuğundaki tarihler için. */
+export const parseDate = (v: string | null | undefined) => {
   if (!v || !/^\d{4}-\d{2}-\d{2}$/.test(v)) return null
   const [y, m, d] = v.split('-').map(Number)
   const date = new Date(y!, m! - 1, d!)

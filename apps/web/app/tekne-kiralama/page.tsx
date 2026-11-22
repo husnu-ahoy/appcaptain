@@ -11,12 +11,23 @@ export const metadata: Metadata = {
 export const dynamic = 'force-dynamic'
 
 interface Props {
-  searchParams: Promise<{ city?: string; type?: string }>
+  searchParams: Promise<{ city?: string; type?: string; model?: string; start?: string; end?: string; cabins?: string }>
 }
 
 export default async function TekneKiralamaPage({ searchParams }: Props) {
-  const { city, type } = await searchParams
+  const { city, type, model, start, end, cabins } = await searchParams
   // Tüm aktif ilanlar tek seferde çekilir; şehir/tip/kişi filtreleri tarayıcıda anında uygulanır.
   const { items } = await fetchBoats({ limit: 200 })
-  return <RentalClient boats={items} initialCity={city ?? ''} initialType={type ?? ''} />
+  const cabinCount = Number(cabins)
+  return (
+    <RentalClient
+      boats={items}
+      initialCity={city ?? ''}
+      initialType={type ?? ''}
+      initialModel={model ?? ''}
+      initialStart={start ?? ''}
+      initialEnd={end ?? ''}
+      initialCabins={Number.isInteger(cabinCount) && cabinCount > 0 && cabinCount <= 20 ? cabinCount : 0}
+    />
+  )
 }

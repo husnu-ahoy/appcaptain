@@ -26,7 +26,7 @@ import {
   faLock,
   faSpinner,
   type IconDefinition,
-} from "@getyourboat/ui";
+} from "@ahoy/ui";
 
 /* ------------------------------------------------------------------ */
 /* Bağlam                                                              */

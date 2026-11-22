@@ -1,5 +1,5 @@
 import type { FastifyInstance } from "fastify";
-import { prisma } from "@getyourboat/database";
+import { prisma } from "@ahoy/database";
 
 export async function adminAuditLogRoutes(app: FastifyInstance) {
   app.get("/audit-log", { onRequest: [app.requireSuperAdmin] }, async (req) => {

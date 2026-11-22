@@ -3,12 +3,12 @@
 import Link from "next/link";
 import { useParams } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
-import type { ConversationDetailDTO, MessageDTO } from "@getyourboat/shared";
-import { Button, Skeleton } from "@getyourboat/ui";
+import type { ConversationDetailDTO, MessageDTO } from "@ahoy/shared";
+import { Button, Skeleton } from "@ahoy/ui";
 import { AppShell } from "../../../components/layout/AppShell";
 import { api, ApiError } from "../../../lib/api";
 import { useMessagingSocket } from "../../../lib/hooks/useMessagingSocket";
-import { MessageSenderType } from "@getyourboat/shared";
+import { MessageSenderType } from "@ahoy/shared";
 
 function formatTime(value: string | Date): string {
   return new Date(value).toLocaleTimeString("tr-TR", {

@@ -1,4 +1,4 @@
-import type { AnnouncementDTO, DashboardStatsDTO } from "@getyourboat/shared";
+import type { AnnouncementDTO, DashboardStatsDTO } from "@ahoy/shared";
 
 // Placeholder data — in production these come from the API (controller →
 // service → repository). Swap the queryFn in lib/api/dashboard.ts for a fetch.

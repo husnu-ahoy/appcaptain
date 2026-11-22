@@ -9,7 +9,7 @@ import {
   parseUnitFieldValues,
   unitSuffix,
   writeUnitFieldValues,
-} from "@getyourboat/shared";
+} from "@ahoy/shared";
 import { Field, Input, Select } from "../ui";
 
 /** Short suffix shown inside the input (fixed metre / litre / knot). */

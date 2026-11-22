@@ -1,4 +1,4 @@
-import type { MessageSenderType } from "@getyourboat/shared";
+import type { MessageSenderType } from "@ahoy/shared";
 import { prisma } from "../../client.js";
 import type {
   ConversationRepository,

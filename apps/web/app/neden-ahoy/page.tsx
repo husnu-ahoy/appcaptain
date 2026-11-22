@@ -38,7 +38,7 @@ const FAQ = [
   },
   {
     q: 'Rezervasyondan önce kaptanla konuşabilir miyim?',
-    a: 'Evet. İlan sayfasındaki “Kaptana mesaj gönder” ile soru sorabilir, yanıtları Mesajlarım sayfasından takip edebilirsin.',
+    a: 'Evet. İlan sayfasındaki “Kaptana mesaj gönder” ile soru sorabilir, yanıtları Mesajlar sayfasından takip edebilirsin.',
   },
 ]
 

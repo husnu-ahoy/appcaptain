@@ -1,11 +1,14 @@
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
+import { noStore, rejectCrossSite } from "../guard";
 
 const API = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000";
 const REFRESH_COOKIE = "gyb_refresh";
 const MAX_AGE = 30 * 24 * 60 * 60;
 
-export async function POST() {
+export async function POST(req: Request) {
+  const refused = rejectCrossSite(req, { json: false });
+  if (refused) return refused;
   const jar = await cookies();
   const refreshToken = jar.get(REFRESH_COOKIE)?.value;
   if (!refreshToken) {
@@ -39,5 +42,5 @@ export async function POST() {
     });
   }
 
-  return response;
+  return noStore(response);
 }

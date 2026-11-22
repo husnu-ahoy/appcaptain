@@ -1,5 +1,5 @@
 import type { FastifyInstance, FastifyRequest } from "fastify";
-import { approvalTypeSchema, boatDraftPatchSchema, extraSchema, listingModelSchema } from "@getyourboat/shared";
+import { approvalTypeSchema, boatDraftPatchSchema, extraSchema, listingModelSchema } from "@ahoy/shared";
 import { parseDetailed } from "../../../lib/validate.js";
 import { loadBoatForReview, loadOwnedBoat } from "../authorization.js";
 import * as service from "../services/onboarding.service.js";

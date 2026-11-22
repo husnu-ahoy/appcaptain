@@ -1,6 +1,6 @@
 "use client";
 
-import type { AuthUserDTO } from "@getyourboat/shared";
+import type { AuthUserDTO } from "@ahoy/shared";
 import { useRouter } from "next/navigation";
 import {
   createContext,

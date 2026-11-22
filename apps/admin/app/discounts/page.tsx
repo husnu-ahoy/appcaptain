@@ -15,7 +15,7 @@ import {
   faTag,
   faTrash,
   faXmark,
-} from "@getyourboat/ui";
+} from "@ahoy/ui";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
@@ -27,7 +27,7 @@ import {
   DISCOUNT_TARGET_LABELS,
   formatDiscountValue,
   type DiscountDTO,
-} from "@getyourboat/shared";
+} from "@ahoy/shared";
 import { api, ApiError } from "../../lib/api";
 
 const TARGET_FILTERS: (DiscountTarget | "ALL")[] = [

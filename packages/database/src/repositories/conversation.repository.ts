@@ -3,8 +3,8 @@ import type {
   ConversationDetailDTO,
   MessageDTO,
   MessagePageDTO,
-} from "@getyourboat/shared";
-import type { MessageSenderType } from "@getyourboat/shared";
+} from "@ahoy/shared";
+import type { MessageSenderType } from "@ahoy/shared";
 
 export interface CreateMessageInput {
   conversationId: string;

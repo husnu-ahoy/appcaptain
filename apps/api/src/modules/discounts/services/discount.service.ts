@@ -3,8 +3,8 @@ import {
   type CreateDiscountInput,
   type DiscountListQuery,
   type UpdateDiscountInput,
-} from "@getyourboat/shared";
-import { discountRepository } from "@getyourboat/database";
+} from "@ahoy/shared";
+import { discountRepository } from "@ahoy/database";
 import { forbidden, notFound } from "../../../lib/errors.js";
 
 /** Who is acting — admins manage everything, captains only their own. */

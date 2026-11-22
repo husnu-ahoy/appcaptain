@@ -1,5 +1,5 @@
-import { prisma } from "@getyourboat/database";
-import type { Prisma } from "@getyourboat/database";
+import { prisma } from "@ahoy/database";
+import type { Prisma } from "@ahoy/database";
 
 interface AuditLogInput {
   adminId: string;

@@ -1,5 +1,5 @@
 {
-  "extends": "@getyourboat/config/tsconfig/base.json",
+  "extends": "@ahoy/config/tsconfig/base.json",
   "compilerOptions": {
     "outDir": "dist",
     "rootDir": "src"

@@ -16,7 +16,7 @@ const SECTIONS = [
     title: "Platform",
     keys: [
       { key: "platform_name", label: "Platform Adı", type: "text" as const, placeholder: "Ahoy Boats" },
-      { key: "platform_support_email", label: "Destek E-postası", type: "email" as const, placeholder: "destek@getyourboat.com" },
+      { key: "platform_support_email", label: "Destek E-postası", type: "email" as const, placeholder: "destek@ahoyboats.com" },
     ],
   },
   {

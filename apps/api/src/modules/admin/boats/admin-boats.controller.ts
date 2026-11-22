@@ -1,6 +1,6 @@
 import type { FastifyInstance } from "fastify";
 import { z } from "zod";
-import { prisma } from "@getyourboat/database";
+import { prisma } from "@ahoy/database";
 import { createAuditLog } from "../audit.js";
 import { HttpError } from "../../../lib/errors.js";
 import { getSupabaseAdmin, PHOTOS_BUCKET } from "../../../lib/supabase.js";

@@ -23,8 +23,8 @@ import {
   type FieldErrorsMap,
   type OnboardingFieldDTO,
   type ResolvedOnboardingConfigDTO,
-} from "@getyourboat/shared";
-import { FontAwesomeIcon, faClock } from "@getyourboat/ui";
+} from "@ahoy/shared";
+import { FontAwesomeIcon, faClock } from "@ahoy/ui";
 import type { OnboardingConfig } from "../../lib/types";
 import { Checkbox, Field, Input, Select, Textarea } from "../ui";
 import { TimePicker } from "./TimePicker";

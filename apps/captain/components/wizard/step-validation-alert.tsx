@@ -1,8 +1,8 @@
 "use client";
 
 import type { ReactNode } from "react";
-import type { FieldErrorsMap } from "@getyourboat/shared";
-import { FormErrorBanner } from "@getyourboat/ui";
+import type { FieldErrorsMap } from "@ahoy/shared";
+import { FormErrorBanner } from "@ahoy/ui";
 import { buildFieldLabelMap } from "../../lib/validation-errors";
 import { Alert } from "../ui";
 

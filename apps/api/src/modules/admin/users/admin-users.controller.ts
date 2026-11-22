@@ -1,7 +1,7 @@
 import { randomBytes } from "node:crypto";
 import type { FastifyInstance } from "fastify";
 import { z } from "zod";
-import { prisma } from "@getyourboat/database";
+import { prisma } from "@ahoy/database";
 import { createAuditLog } from "../audit.js";
 import { HttpError } from "../../../lib/errors.js";
 import { sendPasswordResetEmail, sendOwnerWarningEmail } from "../../../lib/email.js";

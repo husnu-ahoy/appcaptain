@@ -11,7 +11,7 @@ const STEPS = [
   },
   {
     title: 'Kaptana sor',
-    text: 'Aklına takılanı rezervasyondan önce kaptana mesajla sor, yanıtını Mesajlarım’dan takip et.',
+    text: 'Aklına takılanı rezervasyondan önce kaptana mesajla sor, yanıtını Mesajlar sayfasından takip et.',
     img: '/pages/captain.webp',
   },
   {

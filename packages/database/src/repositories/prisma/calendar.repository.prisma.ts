@@ -1,4 +1,4 @@
-import { BookingStatus, type BlockReason } from "@getyourboat/shared";
+import { BookingStatus, type BlockReason } from "@ahoy/shared";
 import { prisma } from "../../client.js";
 import type {
   CalendarBusyBooking,

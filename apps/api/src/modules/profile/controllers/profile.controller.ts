@@ -1,5 +1,5 @@
 import type { FastifyInstance } from "fastify";
-import { photoUploadUrlSchema, profileSetupSchema } from "@getyourboat/shared";
+import { photoUploadUrlSchema, profileSetupSchema } from "@ahoy/shared";
 import { parseDetailed } from "../../../lib/validate.js";
 import * as service from "../services/profile.service.js";
 

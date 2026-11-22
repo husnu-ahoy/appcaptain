@@ -11,7 +11,7 @@ import {
   faPlus,
   faSpinner,
   faTrash,
-} from "@getyourboat/ui";
+} from "@ahoy/ui";
 import {
   BlockReason,
   CalendarModel,
@@ -20,7 +20,7 @@ import {
   calendarModelLabel,
   isHourlyModel,
   type AvailabilityMap,
-} from "@getyourboat/shared";
+} from "@ahoy/shared";
 import { Protected, TopBar } from "../../../../components/protected";
 import { useAuth } from "../../../../components/auth-provider";
 import { Alert, Spinner } from "../../../../components/ui";

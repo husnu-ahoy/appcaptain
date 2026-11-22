@@ -1,4 +1,4 @@
-import { boatRepository } from "@getyourboat/database";
+import { boatRepository } from "@ahoy/database";
 import type { AuthUser } from "../../plugins/captain-auth.js";
 import { forbidden, notFound } from "../../lib/errors.js";
 

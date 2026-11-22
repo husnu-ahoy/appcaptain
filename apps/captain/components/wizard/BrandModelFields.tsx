@@ -6,7 +6,7 @@ import {
   type BoatBrandDTO,
   type BoatModelDTO,
   type FieldErrorsMap,
-} from "@getyourboat/shared";
+} from "@ahoy/shared";
 import { useEffect, useState } from "react";
 import {
   getBrandsForBoatType,

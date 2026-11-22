@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useRef } from "react";
-import { toTimeInputValue } from "@getyourboat/shared";
+import { toTimeInputValue } from "@ahoy/shared";
 import { Select } from "../ui";
 
 const HOURS = Array.from({ length: 24 }, (_, i) => String(i).padStart(2, "0"));

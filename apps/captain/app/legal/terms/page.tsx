@@ -11,7 +11,7 @@ export default function TermsPage() {
 
       <Section title="1. Taraflar ve Kapsam">
         <p>
-          Bu Kullanım Koşulları, SeaHub platformunu işleten SeaHub Teknoloji A.Ş.
+          Bu Kullanım Koşulları, Ahoy platformunu işleten SeaHub Teknoloji A.Ş.
           (&quot;Platform&quot;) ile platforma kayıtlı tekne sahipleri / kaptanlar
           (&quot;Kaptan&quot;) arasındaki ilişkiyi düzenlemektedir. Platforma kayıt olarak bu
           koşulları kabul etmiş sayılırsınız.
@@ -19,7 +19,7 @@ export default function TermsPage() {
       </Section>
 
       <Section title="2. Platform Hizmetleri">
-        <p>SeaHub aşağıdaki hizmetleri sunar:</p>
+        <p>Ahoy aşağıdaki hizmetleri sunar:</p>
         <ul className="list-disc space-y-1 pl-5">
           <li>Tekne listeleme ve yönetim paneli</li>
           <li>Rezervasyon talep ve yönetim sistemi</li>
@@ -28,7 +28,7 @@ export default function TermsPage() {
           <li>Takvim ve müsaitlik yönetimi</li>
         </ul>
         <p>
-          SeaHub bir kiralama şirketi değildir; kiralama işlemi doğrudan Kaptan ile misafir
+          Ahoy bir kiralama şirketi değildir; kiralama işlemi doğrudan Kaptan ile misafir
           arasında gerçekleşir. Platform yalnızca aracı konumundadır.
         </p>
       </Section>
@@ -79,7 +79,7 @@ export default function TermsPage() {
 
       <Section title="7. Sorumluluk Sınırlaması">
         <p>
-          SeaHub, teknenin fiziksel durumu, teknik arızalar veya deniz koşulları nedeniyle oluşan
+          Ahoy, teknenin fiziksel durumu, teknik arızalar veya deniz koşulları nedeniyle oluşan
           zararlardan sorumlu tutulamaz. Platform, kiralama ilişkisinin tarafı değildir; aracılık
           hizmeti sunmaktadır. Misafir güvenliği kaptanın sorumluluğundadır.
         </p>
@@ -95,8 +95,8 @@ export default function TermsPage() {
       <Section title="9. İletişim">
         <p>
           Hukuki talepler ve bildirimler için:{" "}
-          <Link href="mailto:legal@seahub.com" className="text-brand-600 hover:underline">
-            legal@seahub.com
+          <Link href="mailto:legal@ahoyboats.com" className="text-brand-600 hover:underline">
+            legal@ahoyboats.com
           </Link>
         </p>
       </Section>

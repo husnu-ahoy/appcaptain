@@ -5,8 +5,8 @@ import {
   type AdminCreateModelInput,
   type CreateBrandModelRequestInput,
   boatTypeToBrandCategory,
-} from "@getyourboat/shared";
-import { boatBrandRepository } from "@getyourboat/database";
+} from "@ahoy/shared";
+import { boatBrandRepository } from "@ahoy/database";
 import { badRequest, notFound } from "../../../lib/errors.js";
 
 export function listBrands(category?: BoatBrandCategory, activeOnly = true) {

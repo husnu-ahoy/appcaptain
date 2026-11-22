@@ -9,7 +9,7 @@ import {
   faCalendarDays,
   faComments,
   type IconDefinition,
-} from "@getyourboat/ui";
+} from "@ahoy/ui";
 import {
   Bar,
   BarChart,

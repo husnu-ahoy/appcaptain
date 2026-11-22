@@ -1,5 +1,6 @@
 import { cookies } from "next/headers";
 import { NextResponse } from "next/server";
+import { noStore } from "../guard";
 
 const API = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000";
 const REFRESH_COOKIE = "gyb_refresh";
@@ -41,5 +42,5 @@ export async function GET() {
     });
   }
 
-  return response;
+  return noStore(response);
 }

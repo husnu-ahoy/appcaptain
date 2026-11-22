@@ -2,7 +2,7 @@
 
 import { useEffect, useState, useCallback } from "react";
 import Link from "next/link";
-import { EXPERIENCE_CATEGORY_LABELS, EXPERIENCE_STATUS_LABELS } from "@getyourboat/shared";
+import { EXPERIENCE_CATEGORY_LABELS, EXPERIENCE_STATUS_LABELS } from "@ahoy/shared";
 import { api, ApiError } from "../../lib/api";
 
 type Experience = Awaited<ReturnType<typeof api.listExperiences>>["items"][number];

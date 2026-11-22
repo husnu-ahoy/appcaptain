@@ -1,6 +1,6 @@
 "use client";
 
-import { Field, Input, Select, Textarea } from "@getyourboat/ui";
+import { Field, Input, Select, Textarea } from "@ahoy/ui";
 import type { EditBoatFieldDef } from "../../../lib/mock/boat.mock";
 
 interface FormGridProps {

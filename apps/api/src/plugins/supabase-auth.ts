@@ -2,8 +2,8 @@ import fp from "fastify-plugin";
 import { createRemoteJWKSet, decodeProtectedHeader, jwtVerify } from "jose";
 import type { JWTPayload } from "jose";
 import type { FastifyReply, FastifyRequest } from "fastify";
-import { profileRepository } from "@getyourboat/database";
-import type { ProfileRole } from "@getyourboat/shared";
+import { profileRepository } from "@ahoy/database";
+import type { ProfileRole } from "@ahoy/shared";
 import { env } from "../config/env.js";
 
 export interface AuthUser {

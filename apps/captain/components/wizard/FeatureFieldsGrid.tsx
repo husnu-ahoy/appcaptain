@@ -18,13 +18,13 @@ import {
   isUnitFieldKey,
   HULL_MATERIAL_FIELD_KEY,
   HULL_MATERIAL_OPTIONS,
-} from "@getyourboat/shared";
+} from "@ahoy/shared";
 import { Checkbox, Field, Input, Select } from "../ui";
 import { isBrandModelFieldKey } from "./BrandModelFields";
 import { NumberStepper } from "./NumberStepper";
 import { CounterRow, SectionTitle } from "./focus";
 import { HourFieldSelect, UnitFieldInput } from "./UnitFieldInput";
-import type { FieldErrorsMap } from "@getyourboat/shared";
+import type { FieldErrorsMap } from "@ahoy/shared";
 
 const CREW_INCLUDED_FIELD_KEY = "crew_members_included_in_the_price";
 

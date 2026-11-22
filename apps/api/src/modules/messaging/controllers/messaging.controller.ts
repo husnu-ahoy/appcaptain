@@ -2,7 +2,7 @@ import type { FastifyInstance } from "fastify";
 import {
   messageCursorSchema,
   restSendMessageSchema,
-} from "@getyourboat/shared";
+} from "@ahoy/shared";
 import { parseDetailed } from "../../../lib/validate.js";
 import * as service from "../services/messaging.service.js";
 

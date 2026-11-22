@@ -2,7 +2,7 @@ import {
   GuestSenderType,
   type GuestConversationDTO,
   type GuestMessageDTO,
-} from "@getyourboat/shared";
+} from "@ahoy/shared";
 import { Prisma, prisma } from "../../client.js";
 import type {
   CreateGuestMessageData,

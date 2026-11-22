@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { FontAwesomeIcon, faCalendarDays, faShip } from "@getyourboat/ui";
+import { FontAwesomeIcon, faCalendarDays, faShip } from "@ahoy/ui";
 
 const DATE_FORMATTER = new Intl.DateTimeFormat("tr-TR", {
   weekday: "long",

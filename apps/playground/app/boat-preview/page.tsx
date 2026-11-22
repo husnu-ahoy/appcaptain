@@ -1,5 +1,5 @@
-import { BoatDetailView } from "@getyourboat/ui";
-import type { BoatDetailViewModel } from "@getyourboat/shared";
+import { BoatDetailView } from "@ahoy/ui";
+import type { BoatDetailViewModel } from "@ahoy/shared";
 
 // Public, no-auth demo of the customer-facing BoatDetailView (the same
 // component the captain "Preview" step renders). Mock data only.
@@ -55,6 +55,9 @@ const mockModel: BoatDetailViewModel = {
     region: "Muğla",
     city: "Göcek",
     marina: "D-Marin Göcek",
+    latitude: null,
+    longitude: null,
+    address: null,
     summary: "Türkiye, Muğla, Göcek, D-Marin Göcek",
   },
   boatPlanUrl: null,

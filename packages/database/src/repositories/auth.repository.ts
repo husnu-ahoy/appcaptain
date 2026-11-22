@@ -1,4 +1,4 @@
-import type { ProfileRole } from "@getyourboat/shared";
+import type { ProfileRole } from "@ahoy/shared";
 
 export interface CaptainAuthProfile {
   id: string;

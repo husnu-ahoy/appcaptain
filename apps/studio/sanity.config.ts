@@ -4,8 +4,8 @@ import { visionTool } from "@sanity/vision";
 import { schemaTypes } from "./schemas/index.js";
 
 export default defineConfig({
-  name: "getyourboat",
-  title: "GetYourBoat Studio",
+  name: "ahoy",
+  title: "Ahoy Studio",
   projectId: process.env.SANITY_STUDIO_PROJECT_ID || "your-project-id",
   dataset: process.env.SANITY_STUDIO_DATASET || "production",
   plugins: [structureTool(), visionTool()],

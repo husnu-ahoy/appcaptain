@@ -1,5 +1,5 @@
 import type { FastifyInstance } from "fastify";
-import { prisma } from "@getyourboat/database";
+import { prisma } from "@ahoy/database";
 
 const LOCATION_FEATURE_KEYS = ["city", "region", "country", "marina"] as const;
 

@@ -6,9 +6,9 @@ import {
   sendMessageSchema,
   SOCKET_EVENTS,
   conversationRoom,
-} from "@getyourboat/shared";
-import type { ProfileRole } from "@getyourboat/shared";
-import { authRepository } from "@getyourboat/database";
+} from "@ahoy/shared";
+import type { ProfileRole } from "@ahoy/shared";
+import { authRepository } from "@ahoy/database";
 import { captainOrigins } from "../../config/env.js";
 import * as service from "./services/messaging.service.js";
 

@@ -1,5 +1,5 @@
 {
-  "extends": "@getyourboat/config/tsconfig/nextjs.json",
+  "extends": "@ahoy/config/tsconfig/nextjs.json",
   "compilerOptions": {
     "baseUrl": ".",
     "paths": {

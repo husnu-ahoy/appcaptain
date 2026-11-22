@@ -1,4 +1,4 @@
-import { STEP_ORDER, stepIndex } from "@getyourboat/shared";
+import { STEP_ORDER, stepIndex } from "@ahoy/shared";
 import type { BoatStatus, OnboardingStep } from "./types";
 
 // Canonical order + helpers live in the shared package; re-exported for local use.

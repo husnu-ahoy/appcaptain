@@ -4,7 +4,7 @@ import type {
   ExperienceProgressState,
   ExperienceCustomerInfoFieldDTO,
   ExperienceSeasonalPricingRuleDTO,
-} from "@getyourboat/shared";
+} from "@ahoy/shared";
 import type {
   CancellationPolicyType,
   ExperienceCategory,
@@ -14,8 +14,8 @@ import type {
   ExperienceProductType,
   ExperienceDifficultyLevel,
   CustomerInfoFieldType,
-} from "@getyourboat/shared";
-import { computeExperienceProgress, experienceCompletionPercent } from "@getyourboat/shared";
+} from "@ahoy/shared";
+import { computeExperienceProgress, experienceCompletionPercent } from "@ahoy/shared";
 
 export interface ExperienceWriteBase {
   category?: ExperienceCategory | null;

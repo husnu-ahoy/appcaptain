@@ -14,7 +14,7 @@
  * To add a new email type, add a function here following the sendBoatRejectionEmail pattern.
  */
 import nodemailer from "nodemailer";
-import { prisma } from "@getyourboat/database";
+import { prisma } from "@ahoy/database";
 import { env } from "../config/env.js";
 
 let transporter: nodemailer.Transporter | null = null;
@@ -43,7 +43,7 @@ export async function sendBoatRejectionEmail(opts: {
     await t.sendMail({
       from: env.SMTP_FROM,
       to: opts.to,
-      subject: "İlanınız Reddedildi – GetYourBoat",
+      subject: "İlanınız Reddedildi – Ahoy",
       html: `
         <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
           <h2 style="color: #1e3a5f;">İlanınız İncelendi</h2>
@@ -54,7 +54,7 @@ export async function sendBoatRejectionEmail(opts: {
             ${opts.rejectionReason}
           </div>
           <p>İlanınızı bu gerekçe doğrultusunda düzenleyip tekrar incelemeye gönderebilirsiniz.</p>
-          <p style="margin-top:24px;color:#666;font-size:13px;">GetYourBoat Ekibi</p>
+          <p style="margin-top:24px;color:#666;font-size:13px;">Ahoy Ekibi</p>
         </div>
       `,
     });
@@ -75,7 +75,7 @@ export async function sendBoatApprovalEmail(opts: {
     await t.sendMail({
       from: env.SMTP_FROM,
       to: opts.to,
-      subject: "İlanınız Onaylandı – GetYourBoat",
+      subject: "İlanınız Onaylandı – Ahoy",
       html: `
         <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
           <h2 style="color: #1e3a5f;">İlanınız Yayında! 🎉</h2>
@@ -84,7 +84,7 @@ export async function sendBoatApprovalEmail(opts: {
           <div style="background:#f0fff4;border-left:4px solid #38a169;padding:12px 16px;margin:16px 0;border-radius:4px;">
             İlanınız artık platformda yayında ve misafirler tarafından rezervasyon yapılabilir.
           </div>
-          <p style="margin-top:24px;color:#666;font-size:13px;">GetYourBoat Ekibi</p>
+          <p style="margin-top:24px;color:#666;font-size:13px;">Ahoy Ekibi</p>
         </div>
       `,
     });
@@ -110,7 +110,7 @@ export async function sendPasswordResetEmail(opts: {
     await t.sendMail({
       from: env.SMTP_FROM,
       to: opts.to,
-      subject: "Şifre Sıfırlama – GetYourBoat",
+      subject: "Şifre Sıfırlama – Ahoy",
       html: `
         <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
           <h2 style="color: #1e3a5f;">Şifre Sıfırlama</h2>
@@ -122,7 +122,7 @@ export async function sendPasswordResetEmail(opts: {
             </a>
           </div>
           <p style="color:#666;font-size:13px;">Bu bağlantı 24 saat geçerlidir. Eğer bu talebi siz yapmadıysanız bu e-postayı dikkate almayınız.</p>
-          <p style="margin-top:24px;color:#666;font-size:13px;">GetYourBoat Ekibi</p>
+          <p style="margin-top:24px;color:#666;font-size:13px;">Ahoy Ekibi</p>
         </div>
       `,
     });
@@ -145,17 +145,17 @@ export async function sendOwnerWarningEmail(opts: {
     await t.sendMail({
       from: env.SMTP_FROM,
       to: opts.to,
-      subject: "Hesabınızla İlgili Önemli Bir Bildirim – GetYourBoat",
+      subject: "Hesabınızla İlgili Önemli Bir Bildirim – Ahoy",
       html: `
         <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
           <h2 style="color: #1e3a5f;">Önemli Bildirim</h2>
           <p>Sayın ${opts.name},</p>
-          <p>GetYourBoat admin ekibi hesabınızla ilgili aşağıdaki uyarıyı iletmek istemektedir:</p>
+          <p>Ahoy admin ekibi hesabınızla ilgili aşağıdaki uyarıyı iletmek istemektedir:</p>
           <div style="background:#fffbeb;border-left:4px solid #d97706;padding:12px 16px;margin:16px 0;border-radius:4px;">
             ${opts.message}
           </div>
           <p>Sorularınız için destek ekibimize ulaşabilirsiniz.</p>
-          <p style="margin-top:24px;color:#666;font-size:13px;">GetYourBoat Ekibi</p>
+          <p style="margin-top:24px;color:#666;font-size:13px;">Ahoy Ekibi</p>
         </div>
       `,
     });
@@ -187,7 +187,7 @@ export async function sendModeratorNewListingEmail(opts: {
     await t.sendMail({
       from: env.SMTP_FROM,
       to,
-      subject: "Yeni İlan İnceleme Bekliyor – GetYourBoat",
+      subject: "Yeni İlan İnceleme Bekliyor – Ahoy",
       html: `
         <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
           <h2 style="color: #1e3a5f;">Yeni İlan: İnceleme Gerekiyor</h2>
@@ -197,7 +197,7 @@ export async function sendModeratorNewListingEmail(opts: {
             <tr><td style="padding:6px 0;color:#666;">Kaptan</td><td style="padding:6px 0;">${opts.ownerName ?? "—"} (${opts.ownerEmail ?? "—"})</td></tr>
             <tr><td style="padding:6px 0;color:#666;">İlan ID</td><td style="padding:6px 0;font-family:monospace;font-size:12px;">${opts.boatId}</td></tr>
           </table>
-          <p style="margin-top:24px;color:#666;font-size:13px;">GetYourBoat Admin Paneli</p>
+          <p style="margin-top:24px;color:#666;font-size:13px;">Ahoy Admin Paneli</p>
         </div>
       `,
     });
@@ -231,7 +231,7 @@ export async function sendBroadcastEmail(opts: {
           ${opts.name ? `<p>Sayın ${opts.name},</p>` : ""}
           <div style="line-height:1.6;">${opts.body.replace(/\n/g, "<br>")}</div>
           <p style="margin-top:32px;color:#aaa;font-size:12px;border-top:1px solid #eee;padding-top:16px;">
-            GetYourBoat · Bu e-postayı almak istemiyorsanız hesabınızın ayarlarından bildirimleri devre dışı bırakabilirsiniz.
+            Ahoy · Bu e-postayı almak istemiyorsanız hesabınızın ayarlarından bildirimleri devre dışı bırakabilirsiniz.
           </p>
           ${trackingPixel}
         </div>
@@ -266,7 +266,7 @@ export async function sendTicketReplyEmail(opts: {
           <div style="background:#f8fafc;border-left:4px solid #2563eb;padding:12px 16px;margin:16px 0;border-radius:4px;">
             ${opts.body.replace(/\n/g, "<br>")}
           </div>
-          <p style="margin-top:24px;color:#666;font-size:13px;">GetYourBoat Destek Ekibi</p>
+          <p style="margin-top:24px;color:#666;font-size:13px;">Ahoy Destek Ekibi</p>
         </div>
       `,
     });
@@ -299,7 +299,7 @@ export async function sendTicketConfirmationEmail(opts: {
             <tr><td style="padding:6px 0;color:#666;width:100px;">Konu</td><td style="padding:6px 0;font-weight:600;">${opts.subject}</td></tr>
             <tr><td style="padding:6px 0;color:#666;">Talep No</td><td style="padding:6px 0;font-family:monospace;">#${opts.ticketId.slice(-8)}</td></tr>
           </table>
-          <p style="margin-top:24px;color:#666;font-size:13px;">GetYourBoat Destek Ekibi</p>
+          <p style="margin-top:24px;color:#666;font-size:13px;">Ahoy Destek Ekibi</p>
         </div>
       `,
     });

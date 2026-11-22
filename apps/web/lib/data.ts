@@ -186,14 +186,23 @@ export function getTestimonials(): Testimonial[] {
 
 // ── Blog categories ───────────────────────────────────────────
 export function getBlogCategories(): BlogCategory[] {
+  // sayılar elle yazılmaz: mevcut yazılardan hesaplanır
+  const posts = getBlogPosts()
+  const count = (id: string) => posts.filter(p => p.categoryId === id).length
   return [
-    { id: 'all',       label: 'Tümü',              count: 24 },
-    { id: 'rota',      label: '🗺️ Rota & Koy',     count: 7  },
-    { id: 'rehber',    label: '📖 Kiralama Rehberi', count: 5  },
-    { id: 'deneyim',   label: '🤿 Deneyim',          count: 4  },
-    { id: 'teknik',    label: '⚙️ Hava & Teknik',   count: 4  },
-    { id: 'yasam',     label: '🌊 Deniz Yaşamı',    count: 4  },
-  ]
+    { id: 'all',     label: 'Tümü',             count: posts.length },
+    { id: 'rota',    label: 'Rota & Koy',       count: count('rota') },
+    { id: 'rehber',  label: 'Kiralama Rehberi', count: count('rehber') },
+    { id: 'deneyim', label: 'Deneyim',          count: count('deneyim') },
+    { id: 'teknik',  label: 'Hava & Teknik',    count: count('teknik') },
+    { id: 'yasam',   label: 'Deniz Yaşamı',     count: count('yasam') },
+  ].filter(c => c.count > 0)
+}
+
+/** Tam içeriği yazılmış yazılar; diğerleri "yakında" olarak gösterilir. */
+const PUBLISHED_BLOG_SLUGS = new Set(['yelkenli-kiralama-ipuclari'])
+export function isBlogPostPublished(slug: string): boolean {
+  return PUBLISHED_BLOG_SLUGS.has(slug)
 }
 
 // ── Blog posts ────────────────────────────────────────────────
@@ -299,7 +308,7 @@ export function getBlogPostBySlug(slug: string): BlogPostFull | null {
   if (!meta) return null
 
   // Only the first post has rich content for the demo
-  if (slug !== 'yelkenli-kiralama-ipuclari') {
+  if (!isBlogPostPublished(slug)) {
     return {
       ...meta,
       tags: [meta.tag, 'Deniz', 'Ahoy'],

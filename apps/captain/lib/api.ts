@@ -2,7 +2,7 @@ import { getAccessToken } from "./auth/token-store";
 import { refreshSession } from "./auth/client";
 import { notifySessionExpired } from "./auth/session-events";
 import { supabase } from "./supabase";
-import { boatTypeToBrandCategory } from "@getyourboat/shared";
+import { boatTypeToBrandCategory } from "@ahoy/shared";
 import type {
   BoatListItem,
   OnboardingConfig,
@@ -11,7 +11,7 @@ import type {
   UploadUrlResponse,
 } from "./types";
 
-import type { ValidationFieldError } from "@getyourboat/shared";
+import type { ValidationFieldError } from "@ahoy/shared";
 
 const BASE = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000";
 const V1 = `${BASE}/api/v1`;
@@ -121,7 +121,7 @@ export const api = {
 
   patchBoatDraft: (
     id: string,
-    body: { step: import("@getyourboat/shared").OnboardingStep; data: Record<string, unknown> }
+    body: { step: import("@ahoy/shared").OnboardingStep; data: Record<string, unknown> }
   ) => request<SerializedBoat>(`/boats/${id}/draft`, { method: "PATCH", body }),
 
   updateBoatTypeFeatures: (
@@ -130,8 +130,8 @@ export const api = {
       boatTypeKey: string;
       features: { key: string; value?: string | null }[];
       noCrewMembers?: boolean;
-      engineType?: import("@getyourboat/shared").EngineType | null;
-      cabinConfigurations?: import("@getyourboat/shared").CabinConfigurationInput[];
+      engineType?: import("@ahoy/shared").EngineType | null;
+      cabinConfigurations?: import("@ahoy/shared").CabinConfigurationInput[];
     }
   ) =>
     request<SerializedBoat>(`/boats/${id}/boat-type-features`, {
@@ -223,9 +223,9 @@ export const api = {
     request(`/boats/${id}/documents/${documentId}`, { method: "DELETE" }),
 
   // ---- Profile ----
-  getProfile: () => request<{ profile: import("@getyourboat/shared").OwnerProfileDTO | null }>("/profile/me"),
-  updateProfile: (body: import("@getyourboat/shared").ProfileSetupInput) =>
-    request<{ profile: import("@getyourboat/shared").OwnerProfileDTO }>("/profile/me", {
+  getProfile: () => request<{ profile: import("@ahoy/shared").OwnerProfileDTO | null }>("/profile/me"),
+  updateProfile: (body: import("@ahoy/shared").ProfileSetupInput) =>
+    request<{ profile: import("@ahoy/shared").OwnerProfileDTO }>("/profile/me", {
       method: "PATCH",
       body,
     }),
@@ -248,84 +248,84 @@ export const api = {
 
   // ---- Messaging ----
   listConversations: () =>
-    request<{ items: import("@getyourboat/shared").ConversationDTO[] }>("/conversations"),
+    request<{ items: import("@ahoy/shared").ConversationDTO[] }>("/conversations"),
   getConversation: (id: string) =>
-    request<{ conversation: import("@getyourboat/shared").ConversationDetailDTO }>(
+    request<{ conversation: import("@ahoy/shared").ConversationDetailDTO }>(
       `/conversations/${id}`
     ),
   getMessages: (id: string, cursor?: string) => {
     const qs = cursor ? `?cursor=${encodeURIComponent(cursor)}` : "";
-    return request<{ items: import("@getyourboat/shared").MessageDTO[]; nextCursor: string | null }>(
+    return request<{ items: import("@ahoy/shared").MessageDTO[]; nextCursor: string | null }>(
       `/conversations/${id}/messages${qs}`
     );
   },
   sendMessage: (id: string, body: string) =>
-    request<{ message: import("@getyourboat/shared").MessageDTO }>(
+    request<{ message: import("@ahoy/shared").MessageDTO }>(
       `/conversations/${id}/messages`,
       { method: "POST", body: { body } }
     ),
 
   // ---- Guest messaging (booking-based) ----
   listGuestConversations: () =>
-    request<{ conversations: import("@getyourboat/shared").GuestConversationDTO[] }>(
+    request<{ conversations: import("@ahoy/shared").GuestConversationDTO[] }>(
       "/guest-conversations"
     ),
   guestUnreadCount: () =>
     request<{ count: number }>("/guest-conversations/unread-count"),
   getGuestConversation: (id: string) =>
-    request<{ conversation: import("@getyourboat/shared").GuestConversationDTO }>(
+    request<{ conversation: import("@ahoy/shared").GuestConversationDTO }>(
       `/guest-conversations/${id}`
     ),
   getGuestMessages: (id: string) =>
-    request<{ messages: import("@getyourboat/shared").GuestMessageDTO[] }>(
+    request<{ messages: import("@ahoy/shared").GuestMessageDTO[] }>(
       `/guest-conversations/${id}/messages`
     ),
   sendGuestMessage: (id: string, content: string) =>
-    request<{ message: import("@getyourboat/shared").GuestMessageDTO }>(
+    request<{ message: import("@ahoy/shared").GuestMessageDTO }>(
       `/guest-conversations/${id}/messages`,
       { method: "POST", body: { content } }
     ),
 
   // ---- Payments (booking earnings) ----
-  listPayments: (query: import("@getyourboat/shared").BookingPaymentListQuery = {}) => {
+  listPayments: (query: import("@ahoy/shared").BookingPaymentListQuery = {}) => {
     const params = new URLSearchParams();
     if (query.status) params.set("status", query.status);
     if (query.page) params.set("page", String(query.page));
     if (query.limit) params.set("limit", String(query.limit));
     const qs = params.toString();
-    return request<import("@getyourboat/shared").BookingPaymentListResponse>(
+    return request<import("@ahoy/shared").BookingPaymentListResponse>(
       `/payments${qs ? `?${qs}` : ""}`
     );
   },
   getPayment: (id: string) =>
-    request<{ payment: import("@getyourboat/shared").BookingPaymentDTO }>(
+    request<{ payment: import("@ahoy/shared").BookingPaymentDTO }>(
       `/payments/${id}`
     ),
 
   // ---- Experiences ----
   myExperiences: () =>
-    request<{ items: import("@getyourboat/shared").ExperienceListItemDTO[] }>(
+    request<{ items: import("@ahoy/shared").ExperienceListItemDTO[] }>(
       "/experiences/mine"
     ),
   createExperience: () =>
-    request<import("@getyourboat/shared").ExperienceDTO>("/experiences", { method: "POST" }),
+    request<import("@ahoy/shared").ExperienceDTO>("/experiences", { method: "POST" }),
   getExperience: (id: string) =>
-    request<import("@getyourboat/shared").ExperienceDTO>(`/experiences/${id}`),
+    request<import("@ahoy/shared").ExperienceDTO>(`/experiences/${id}`),
   updateExperienceStep: (
     id: string,
-    step: import("@getyourboat/shared").ExperienceStep,
+    step: import("@ahoy/shared").ExperienceStep,
     body: unknown
   ) =>
-    request<import("@getyourboat/shared").ExperienceDTO>(`/experiences/${id}/steps/${step}`, {
+    request<import("@ahoy/shared").ExperienceDTO>(`/experiences/${id}/steps/${step}`, {
       method: "PUT",
       body,
     }),
   submitExperience: (id: string) =>
-    request<import("@getyourboat/shared").ExperienceDTO>(`/experiences/${id}/submit`, {
+    request<import("@ahoy/shared").ExperienceDTO>(`/experiences/${id}/submit`, {
       method: "POST",
     }),
   toggleExperienceStatus: (id: string, status: "ACTIVE" | "PAUSED") =>
-    request<import("@getyourboat/shared").ExperienceDTO>(`/experiences/${id}/status`, {
+    request<import("@ahoy/shared").ExperienceDTO>(`/experiences/${id}/status`, {
       method: "PATCH",
       body: { status },
     }),
@@ -340,12 +340,12 @@ export const api = {
     id: string,
     body: { storagePath: string; asCover?: boolean }
   ) =>
-    request<import("@getyourboat/shared").ExperienceDTO>(`/experiences/${id}/photos`, {
+    request<import("@ahoy/shared").ExperienceDTO>(`/experiences/${id}/photos`, {
       method: "POST",
       body,
     }),
   deleteExperiencePhoto: (id: string, url: string) =>
-    request<import("@getyourboat/shared").ExperienceDTO>(`/experiences/${id}/photos`, {
+    request<import("@ahoy/shared").ExperienceDTO>(`/experiences/${id}/photos`, {
       method: "DELETE",
       body: { url },
     }),
@@ -353,18 +353,18 @@ export const api = {
     id: string,
     body: {
       label: string;
-      fieldType: import("@getyourboat/shared").CustomerInfoFieldType;
+      fieldType: import("@ahoy/shared").CustomerInfoFieldType;
       required?: boolean;
       helpText?: string | null;
       options?: string[];
     }
   ) =>
-    request<{ items: import("@getyourboat/shared").ExperienceCustomerInfoFieldDTO[] }>(
+    request<{ items: import("@ahoy/shared").ExperienceCustomerInfoFieldDTO[] }>(
       `/experiences/${id}/customer-info-fields`,
       { method: "POST", body }
     ),
   removeExperienceCustomerInfoField: (id: string, fieldId: string) =>
-    request<{ items: import("@getyourboat/shared").ExperienceCustomerInfoFieldDTO[] }>(
+    request<{ items: import("@ahoy/shared").ExperienceCustomerInfoFieldDTO[] }>(
       `/experiences/${id}/customer-info-fields/${fieldId}`,
       { method: "DELETE" }
     ),
@@ -372,12 +372,12 @@ export const api = {
     id: string,
     body: { label?: string; startDate: string; endDate: string; price: number }
   ) =>
-    request<{ items: import("@getyourboat/shared").ExperienceSeasonalPricingRuleDTO[] }>(
+    request<{ items: import("@ahoy/shared").ExperienceSeasonalPricingRuleDTO[] }>(
       `/experiences/${id}/seasonal-pricing`,
       { method: "POST", body }
     ),
   removeExperienceSeasonalPricingRule: (id: string, ruleId: string) =>
-    request<{ items: import("@getyourboat/shared").ExperienceSeasonalPricingRuleDTO[] }>(
+    request<{ items: import("@ahoy/shared").ExperienceSeasonalPricingRuleDTO[] }>(
       `/experiences/${id}/seasonal-pricing/${ruleId}`,
       { method: "DELETE" }
     ),
@@ -389,24 +389,24 @@ export const api = {
     rangeStart: string,
     rangeEnd: string
   ) =>
-    request<import("@getyourboat/shared").AvailabilityMap>(
+    request<import("@ahoy/shared").AvailabilityMap>(
       `/boats/${boatId}/calendar/availability?model=${encodeURIComponent(model)}&rangeStart=${rangeStart}&rangeEnd=${rangeEnd}`,
       { auth: false }
     ),
 
   listBlocks: (boatId: string) =>
-    request<import("@getyourboat/shared").BlockResponseDTO[]>(
+    request<import("@ahoy/shared").BlockResponseDTO[]>(
       `/boats/${boatId}/calendar/blocks`
     ),
 
-  createBlock: (boatId: string, body: import("@getyourboat/shared").CreateBlockRequestDTO) =>
-    request<import("@getyourboat/shared").BlockResponseDTO>(
+  createBlock: (boatId: string, body: import("@ahoy/shared").CreateBlockRequestDTO) =>
+    request<import("@ahoy/shared").BlockResponseDTO>(
       `/boats/${boatId}/calendar/blocks`,
       { method: "POST", body }
     ),
 
-  updateBlock: (id: string, body: import("@getyourboat/shared").UpdateBlockRequestDTO) =>
-    request<import("@getyourboat/shared").BlockResponseDTO>(
+  updateBlock: (id: string, body: import("@ahoy/shared").UpdateBlockRequestDTO) =>
+    request<import("@ahoy/shared").BlockResponseDTO>(
       `/calendar/blocks/${id}`,
       { method: "PATCH", body }
     ),
@@ -421,15 +421,15 @@ export const api = {
     request<void>(`/boats/${boatId}/calendar/pricing`, { method: "PATCH", body }),
 
   listMockReservations: (boatId: string) =>
-    request<import("@getyourboat/shared").MockReservationDTO[]>(
+    request<import("@ahoy/shared").MockReservationDTO[]>(
       `/boats/${boatId}/calendar/mock-reservations`
     ),
 
   createMockReservation: (
     boatId: string,
-    body: { model: import("@getyourboat/shared").BookingModel; startDate: string; endDate: string; guestName?: string; note?: string }
+    body: { model: import("@ahoy/shared").BookingModel; startDate: string; endDate: string; guestName?: string; note?: string }
   ) =>
-    request<import("@getyourboat/shared").MockReservationDTO>(
+    request<import("@ahoy/shared").MockReservationDTO>(
       `/boats/${boatId}/calendar/mock-reservations`,
       { method: "POST", body }
     ),
@@ -441,51 +441,51 @@ export const api = {
   listBoatBrands: (boatTypeKey: string) => {
     const category = boatTypeToBrandCategory(boatTypeKey);
     const qs = category ? `?category=${encodeURIComponent(category)}` : "";
-    return request<{ items: import("@getyourboat/shared").BoatBrandDTO[] }>(
+    return request<{ items: import("@ahoy/shared").BoatBrandDTO[] }>(
       `/boat-brands${qs}`
     );
   },
   listAllBoatBrands: () =>
-    request<{ items: import("@getyourboat/shared").BoatBrandDTO[] }>("/boat-brands"),
+    request<{ items: import("@ahoy/shared").BoatBrandDTO[] }>("/boat-brands"),
   listBoatModels: (brandId: string) =>
-    request<{ items: import("@getyourboat/shared").BoatModelDTO[] }>(
+    request<{ items: import("@ahoy/shared").BoatModelDTO[] }>(
       `/boat-brands/${brandId}/models`
     ),
   createBrandModelRequest: (
-    body: import("@getyourboat/shared").CreateBrandModelRequestInput
+    body: import("@ahoy/shared").CreateBrandModelRequestInput
   ) =>
-    request<import("@getyourboat/shared").BrandModelRequestDTO>("/brand-model-requests", {
+    request<import("@ahoy/shared").BrandModelRequestDTO>("/brand-model-requests", {
       method: "POST",
       body,
     }),
 
   // ---- Discounts (admin-guarded) ----
-  listDiscounts: (query: import("@getyourboat/shared").DiscountListQuery = {}) => {
+  listDiscounts: (query: import("@ahoy/shared").DiscountListQuery = {}) => {
     const params = new URLSearchParams();
     if (query.target) params.set("target", query.target);
     if (query.isActive !== undefined) params.set("isActive", String(query.isActive));
     if (query.page) params.set("page", String(query.page));
     if (query.limit) params.set("limit", String(query.limit));
     const qs = params.toString();
-    return request<import("@getyourboat/shared").DiscountListResponse>(
+    return request<import("@ahoy/shared").DiscountListResponse>(
       `/admin/discounts${qs ? `?${qs}` : ""}`
     );
   },
-  createDiscount: (body: import("@getyourboat/shared").CreateDiscountInput) =>
-    request<{ discount: import("@getyourboat/shared").DiscountDTO }>("/admin/discounts", {
+  createDiscount: (body: import("@ahoy/shared").CreateDiscountInput) =>
+    request<{ discount: import("@ahoy/shared").DiscountDTO }>("/admin/discounts", {
       method: "POST",
       body,
     }),
   updateDiscount: (
     id: string,
-    body: import("@getyourboat/shared").UpdateDiscountInput
+    body: import("@ahoy/shared").UpdateDiscountInput
   ) =>
-    request<{ discount: import("@getyourboat/shared").DiscountDTO }>(`/admin/discounts/${id}`, {
+    request<{ discount: import("@ahoy/shared").DiscountDTO }>(`/admin/discounts/${id}`, {
       method: "PATCH",
       body,
     }),
   toggleDiscount: (id: string) =>
-    request<{ discount: import("@getyourboat/shared").DiscountDTO }>(
+    request<{ discount: import("@ahoy/shared").DiscountDTO }>(
       `/admin/discounts/${id}/toggle`,
       { method: "PATCH" }
     ),
@@ -505,34 +505,34 @@ export const api = {
   },
 
   // ---- Bookings (guest requests → captain approves) ----
-  createBooking: (body: import("@getyourboat/shared").CreateBookingInput) =>
-    request<{ booking: import("@getyourboat/shared").BookingDTO }>("/bookings", {
+  createBooking: (body: import("@ahoy/shared").CreateBookingInput) =>
+    request<{ booking: import("@ahoy/shared").BookingDTO }>("/bookings", {
       method: "POST",
       body,
       auth: false,
     }),
   getBoatAvailability: (boatId: string) =>
-    request<{ blockedRanges: import("@getyourboat/shared").BookingBlockedRange[] }>(
+    request<{ blockedRanges: import("@ahoy/shared").BookingBlockedRange[] }>(
       `/bookings/boat/${boatId}/availability`,
       { auth: false }
     ),
-  listCaptainBookings: (query: import("@getyourboat/shared").BookingListQuery = {}) => {
+  listCaptainBookings: (query: import("@ahoy/shared").BookingListQuery = {}) => {
     const params = new URLSearchParams();
     if (query.status) params.set("status", query.status);
     if (query.page) params.set("page", String(query.page));
     if (query.limit) params.set("limit", String(query.limit));
     const qs = params.toString();
-    return request<import("@getyourboat/shared").BookingListResponse>(
+    return request<import("@ahoy/shared").BookingListResponse>(
       `/bookings/captain${qs ? `?${qs}` : ""}`
     );
   },
   approveBooking: (id: string, totalPrice?: number | null) =>
-    request<{ booking: import("@getyourboat/shared").BookingDTO }>(
+    request<{ booking: import("@ahoy/shared").BookingDTO }>(
       `/bookings/${id}/approve`,
       { method: "PATCH", body: { totalPrice } }
     ),
   rejectBooking: (id: string, rejectionNote?: string | null) =>
-    request<{ booking: import("@getyourboat/shared").BookingDTO }>(
+    request<{ booking: import("@ahoy/shared").BookingDTO }>(
       `/bookings/${id}/reject`,
       { method: "PATCH", body: { rejectionNote } }
     ),
@@ -543,20 +543,20 @@ export const api = {
     query: { rangeStart: string; rangeEnd: string; model: string }
   ) => {
     const params = new URLSearchParams(query);
-    return request<import("@getyourboat/shared").AvailabilityMap>(
+    return request<import("@ahoy/shared").AvailabilityMap>(
       `/boats/${boatId}/calendar/availability?${params.toString()}`,
       { auth: false }
     );
   },
   listCalendarBlocks: (boatId: string) =>
-    request<{ blocks: import("@getyourboat/shared").CalendarBlockDTO[] }>(
+    request<{ blocks: import("@ahoy/shared").CalendarBlockDTO[] }>(
       `/boats/${boatId}/calendar/blocks`
     ),
   createCalendarBlock: (
     boatId: string,
-    body: Omit<import("@getyourboat/shared").CreateBlockInput, "boatId">
+    body: Omit<import("@ahoy/shared").CreateBlockInput, "boatId">
   ) =>
-    request<{ block: import("@getyourboat/shared").CalendarBlockDTO }>(
+    request<{ block: import("@ahoy/shared").CalendarBlockDTO }>(
       `/boats/${boatId}/calendar/blocks`,
       { method: "POST", body }
     ),
@@ -564,9 +564,9 @@ export const api = {
     request<void>(`/calendar/blocks/${blockId}`, { method: "DELETE" }),
   setCalendarPriceOverride: (
     boatId: string,
-    body: Omit<import("@getyourboat/shared").SetPriceOverrideInput, "boatId">
+    body: Omit<import("@ahoy/shared").SetPriceOverrideInput, "boatId">
   ) =>
-    request<{ override: import("@getyourboat/shared").PriceOverride }>(
+    request<{ override: import("@ahoy/shared").PriceOverride }>(
       `/boats/${boatId}/calendar/price-override`,
       { method: "POST", body }
     ),

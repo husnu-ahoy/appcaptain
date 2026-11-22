@@ -6,7 +6,7 @@ import type {
   BoatDetailGalleryImage,
   BoatDetailPolicyLine,
   BoatDetailViewModel,
-} from "@getyourboat/shared";
+} from "@ahoy/shared";
 import { cn } from "../lib/cn";
 import { Modal } from "./modal";
 import {

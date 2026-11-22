@@ -30,6 +30,15 @@ function validateOriginList(fieldName: string) {
   };
 }
 
+/** Values that ship in this repo or are commonly copied from examples. */
+const KNOWN_PLACEHOLDER_SECRETS = new Set([
+  "change-me-in-production",
+  "changeme",
+  "change-me",
+  "secret",
+  "dev-secret",
+]);
+
 const envSchema = z.object({
   NODE_ENV: z
     .enum(["development", "test", "production"])
@@ -76,7 +85,27 @@ const envSchema = z.object({
   SMTP_SECURE: z.coerce.boolean().default(false),
   SMTP_USER: z.string().optional(),
   SMTP_PASS: z.string().optional(),
-  SMTP_FROM: z.string().default("noreply@getyourboat.com"),
+  SMTP_FROM: z.string().default("noreply@ahoyboats.com"),
+}).superRefine((value, ctx) => {
+  // The JWT_SECRET default above is public (it is in the repo), so anyone could
+  // forge captain tokens with it. Deployed builds must bring their own secret.
+  const deployed = value.NODE_ENV === "production" || process.env.VERCEL === "1";
+  if (!deployed) return;
+  const secret = value.JWT_SECRET;
+  if (secret.length < 32 || KNOWN_PLACEHOLDER_SECRETS.has(secret.toLowerCase())) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ["JWT_SECRET"],
+      message: "JWT_SECRET must be set to a random value of at least 32 characters in production",
+    });
+  }
+  if (secret === value.ADMIN_JWT_SECRET || secret === value.SUPABASE_JWT_SECRET) {
+    ctx.addIssue({
+      code: z.ZodIssueCode.custom,
+      path: ["JWT_SECRET"],
+      message: "JWT_SECRET must differ from ADMIN_JWT_SECRET and SUPABASE_JWT_SECRET",
+    });
+  }
 });
 
 export const env = envSchema.parse(process.env);

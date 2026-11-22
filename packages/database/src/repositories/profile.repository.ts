@@ -1,6 +1,6 @@
-import type { OwnerProfileDTO } from "@getyourboat/shared";
-import { isOwnerProfileComplete, type ProfileSetupInput } from "@getyourboat/shared";
-import type { ProfileRole } from "@getyourboat/shared";
+import type { OwnerProfileDTO } from "@ahoy/shared";
+import { isOwnerProfileComplete, type ProfileSetupInput } from "@ahoy/shared";
+import type { ProfileRole } from "@ahoy/shared";
 
 export interface AuthProfile {
   id: string;

@@ -2,7 +2,7 @@
  * Demo messaging seed: fake customer + reservation + conversation with sample messages.
  * Idempotent — safe to re-run.
  *
- * Usage: pnpm --filter @getyourboat/database db:seed:messaging
+ * Usage: pnpm --filter @ahoy/database db:seed:messaging
  * Optional env: MESSAGING_DEMO_CAPTAIN_EMAIL
  */
 import bcrypt from "bcryptjs";

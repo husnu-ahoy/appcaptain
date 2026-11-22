@@ -1,10 +1,13 @@
 import { NextResponse } from "next/server";
+import { noStore, rejectCrossSite } from "../guard";
 
 const API = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000";
 const REFRESH_COOKIE = "gyb_refresh";
 const MAX_AGE = 30 * 24 * 60 * 60;
 
 export async function POST(req: Request) {
+  const refused = rejectCrossSite(req, { json: true });
+  if (refused) return refused;
   const res = await fetch(`${API}/api/v1/auth/login`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -30,5 +33,5 @@ export async function POST(req: Request) {
     });
   }
 
-  return response;
+  return noStore(response);
 }

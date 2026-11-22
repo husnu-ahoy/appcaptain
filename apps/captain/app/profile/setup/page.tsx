@@ -2,7 +2,7 @@
 
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { Button } from "@getyourboat/ui";
+import { Button } from "@ahoy/ui";
 import { Protected, TopBar } from "../../../components/protected";
 import { useAuth } from "../../../components/auth-provider";
 import { Alert, Field, Input, Select, Spinner } from "../../../components/ui";

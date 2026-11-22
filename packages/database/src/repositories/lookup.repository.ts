@@ -7,7 +7,7 @@ import type {
   OnboardingConfigDTO,
   OnboardingFieldDTO,
   ResolvedOnboardingConfigDTO,
-} from "@getyourboat/shared";
+} from "@ahoy/shared";
 
 export type LookupModel =
   | "listingModelOption"

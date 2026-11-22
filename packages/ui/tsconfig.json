@@ -1,5 +1,5 @@
 {
-  "extends": "@getyourboat/config/tsconfig/react-library.json",
+  "extends": "@ahoy/config/tsconfig/react-library.json",
   "include": ["src/**/*.ts", "src/**/*.tsx"],
   "exclude": ["node_modules", "dist"]
 }

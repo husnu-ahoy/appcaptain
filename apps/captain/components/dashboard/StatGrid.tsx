@@ -11,8 +11,8 @@ import {
   faLayerGroup,
   faStar,
   type IconDefinition,
-} from "@getyourboat/ui";
-import type { DashboardStatsDTO } from "@getyourboat/shared";
+} from "@ahoy/ui";
+import type { DashboardStatsDTO } from "@ahoy/shared";
 
 interface StatGridProps {
   stats?: DashboardStatsDTO;

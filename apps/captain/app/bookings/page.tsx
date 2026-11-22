@@ -12,7 +12,7 @@ import {
   faSpinner,
   faUsers,
   faXmark,
-} from "@getyourboat/ui";
+} from "@ahoy/ui";
 import { useEffect, useMemo, useState } from "react";
 import {
   BOOKING_STATUS_LABELS,
@@ -20,7 +20,7 @@ import {
   RENTAL_TYPE_LABELS,
   formatBookingPrice,
   type BookingDTO,
-} from "@getyourboat/shared";
+} from "@ahoy/shared";
 import { AppShell } from "../../components/layout/AppShell";
 import { useAuth } from "../../components/auth-provider";
 import { Field, Input, Modal, Textarea } from "../../components/ui";

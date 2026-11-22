@@ -1,5 +1,5 @@
-import { boatRepository } from "@getyourboat/database";
-import { BoatStatus, type DocumentStatus } from "@getyourboat/shared";
+import { boatRepository } from "@ahoy/database";
+import { BoatStatus, type DocumentStatus } from "@ahoy/shared";
 import { conflict, notFound } from "../../../lib/errors.js";
 import { getBoatState } from "./onboarding.service.js";
 

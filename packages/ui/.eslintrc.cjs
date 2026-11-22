@@ -1,4 +1,4 @@
 /** @type {import("eslint").Linter.Config} */
 module.exports = {
-  extends: ["@getyourboat/config/eslint/next"],
+  extends: ["@ahoy/config/eslint/next"],
 };

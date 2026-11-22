@@ -1,4 +1,4 @@
-import panel from "@getyourboat/config/tailwind/panel";
+import panel from "@ahoy/config/tailwind/panel";
 
 /**
  * Admin paneli — Ahoy Boats panel ön ayarı (lacivert/gök mavisi/krem, Manrope).

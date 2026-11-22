@@ -1,5 +1,5 @@
 import type { Config } from "tailwindcss";
-import panel from "@getyourboat/config/tailwind/panel";
+import panel from "@ahoy/config/tailwind/panel";
 
 /**
  * Kaptan paneli — Ahoy Boats panel ön ayarı (lacivert/gök mavisi/krem, Manrope).

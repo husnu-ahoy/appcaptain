@@ -1,6 +1,6 @@
 import type { FastifyInstance, FastifyRequest } from "fastify";
-import { sendGuestMessageSchema } from "@getyourboat/shared";
-import { prisma } from "@getyourboat/database";
+import { sendGuestMessageSchema } from "@ahoy/shared";
+import { prisma } from "@ahoy/database";
 import { parseDetailed } from "../../../lib/validate.js";
 import * as service from "../services/guest-messaging.service.js";
 

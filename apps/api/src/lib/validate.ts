@@ -1,5 +1,5 @@
 import type { z, ZodTypeAny } from "zod";
-import { buildValidationErrorResponse } from "@getyourboat/shared";
+import { buildValidationErrorResponse } from "@ahoy/shared";
 import { HttpError } from "./errors.js";
 
 /** Parses input with a Zod schema, throwing a 400 HttpError on failure. */

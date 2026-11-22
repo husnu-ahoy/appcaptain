@@ -1,6 +1,6 @@
 import { randomUUID } from "node:crypto";
-import { profileRepository } from "@getyourboat/database";
-import type { ProfileSetupInput } from "@getyourboat/shared";
+import { profileRepository } from "@ahoy/database";
+import type { ProfileSetupInput } from "@ahoy/shared";
 import { badRequest } from "../../../lib/errors.js";
 import { sanitizeStorageFileName } from "../../../lib/sanitize.js";
 import { PHOTOS_BUCKET, getSupabaseAdmin, publicUrl } from "../../../lib/supabase.js";

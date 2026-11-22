@@ -1,6 +1,6 @@
 import { prisma } from "../../client.js";
-import type { ExperienceProgressState } from "@getyourboat/shared";
-import type { ExperienceStatus } from "@getyourboat/shared";
+import type { ExperienceProgressState } from "@ahoy/shared";
+import type { ExperienceStatus } from "@ahoy/shared";
 import type {
   ExperienceRepository,
   ExperienceWriteBase,

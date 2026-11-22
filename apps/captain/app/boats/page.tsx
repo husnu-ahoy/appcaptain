@@ -15,7 +15,7 @@ import {
   faEye,
   faPlus,
   faTrash,
-} from "@getyourboat/ui";
+} from "@ahoy/ui";
 import { useAuth } from "../../components/auth-provider";
 import { AppShell } from "../../components/layout/AppShell";
 import { api, ApiError } from "../../lib/api";

@@ -144,3 +144,16 @@ export function useFavorites(options?: { onPendingAdded?: (id: string) => void }
 
   return { user: snap.user, ready: snap.ready, ids: snap.ids, isFavorite, toggle: toggleFavorite }
 }
+
+/**
+ * Giriş yapmış müşteri. Favorilerle aynı ortak kaynaktan okunur, böylece oturum
+ * sayfada tek bir yerden dinlenir. Profil güncellenince (USER_UPDATED) burası da yenilenir.
+ */
+export function useSessionUser() {
+  const snap = useSyncExternalStore(
+    subscribe,
+    () => state,
+    () => SERVER_STATE,
+  )
+  return { user: snap.user, ready: snap.ready }
+}

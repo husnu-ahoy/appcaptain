@@ -1,5 +1,5 @@
-import { GuestSenderType } from "@getyourboat/shared";
-import { guestConversationRepository, prisma } from "@getyourboat/database";
+import { GuestSenderType } from "@ahoy/shared";
+import { guestConversationRepository, prisma } from "@ahoy/database";
 import type { CustomerUser } from "../../../plugins/customer-auth.js";
 import { badRequest, notFound } from "../../../lib/errors.js";
 

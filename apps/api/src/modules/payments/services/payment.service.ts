@@ -1,8 +1,8 @@
 import type {
   BookingPaymentListQuery,
   BookingPaymentListResponse,
-} from "@getyourboat/shared";
-import { bookingPaymentRepository } from "@getyourboat/database";
+} from "@ahoy/shared";
+import { bookingPaymentRepository } from "@ahoy/database";
 import { forbidden, notFound } from "../../../lib/errors.js";
 
 export async function listCaptainPayments(

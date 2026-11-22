@@ -32,8 +32,8 @@ export default function KvkkPage() {
           Adres: [Şirket Adresi], İstanbul, Türkiye
           <br />
           E-posta:{" "}
-          <Link href="mailto:kvkk@seahub.com" className="text-brand-600 hover:underline">
-            kvkk@seahub.com
+          <Link href="mailto:kvkk@ahoyboats.com" className="text-brand-600 hover:underline">
+            kvkk@ahoyboats.com
           </Link>
           <br />
           KEP: seahub@hs03.kep.tr
@@ -100,8 +100,8 @@ export default function KvkkPage() {
         </ul>
         <p>
           Başvuru:{" "}
-          <Link href="mailto:kvkk@seahub.com" className="text-brand-600 hover:underline">
-            kvkk@seahub.com
+          <Link href="mailto:kvkk@ahoyboats.com" className="text-brand-600 hover:underline">
+            kvkk@ahoyboats.com
           </Link>{" "}
           adresine kimliğinizi doğrulayan belge ile yazılı başvuru yapabilirsiniz. Başvurular en geç{" "}
           <strong>30 gün</strong> içinde yanıtlanır.

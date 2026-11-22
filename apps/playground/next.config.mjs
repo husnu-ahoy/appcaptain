@@ -10,7 +10,7 @@ config({ path: resolve(__dirname, "../../.env") });
 const nextConfig = {
   reactStrictMode: true,
   outputFileTracingRoot: resolve(__dirname, "../.."),
-  transpilePackages: ["@getyourboat/shared", "@getyourboat/ui"],
+  transpilePackages: ["@ahoy/shared", "@ahoy/ui"],
   env: {
     NEXT_PUBLIC_API_URL: process.env.NEXT_PUBLIC_API_URL,
   },

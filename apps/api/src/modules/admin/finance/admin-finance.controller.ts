@@ -1,6 +1,6 @@
 import type { FastifyInstance } from "fastify";
 import { z } from "zod";
-import { prisma, type Prisma } from "@getyourboat/database";
+import { prisma, type Prisma } from "@ahoy/database";
 import { createAuditLog } from "../audit.js";
 import { HttpError } from "../../../lib/errors.js";
 

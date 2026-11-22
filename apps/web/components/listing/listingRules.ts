@@ -1,4 +1,4 @@
-import { INCLUDED_FEE_FIELD_GROUPS, readIncludedFeePair } from '@getyourboat/shared'
+import { INCLUDED_FEE_FIELD_GROUPS, readIncludedFeePair } from '@ahoy/shared'
 import {
   CalendarDays,
   Fuel,

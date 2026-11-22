@@ -1,5 +1,5 @@
 import type { FastifyInstance, FastifyRequest } from "fastify";
-import { sendGuestMessageSchema } from "@getyourboat/shared";
+import { sendGuestMessageSchema } from "@ahoy/shared";
 import { parseDetailed } from "../../../lib/validate.js";
 import * as service from "../services/customer-messaging.service.js";
 

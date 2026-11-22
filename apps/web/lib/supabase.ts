@@ -33,3 +33,40 @@ export const supabase = createClient(
     },
   }
 );
+
+/*
+ * Şifre sıfırlama bağlantısıyla gelen kullanıcı (PASSWORD_RECOVERY) için işaret.
+ * Dinleyici modül yüklenirken kurulur: Supabase adres çubuğundaki anahtarı
+ * işleyip olayı yaydığında sayfa bileşenleri henüz bağlanmamış olabilir.
+ * Hesap sayfası bu işareti görünce "yeni şifre" formunu açar.
+ */
+const RECOVERY_KEY = "ahoy:password-recovery";
+export const PASSWORD_RECOVERY_EVENT = "ahoy:password-recovery";
+
+if (typeof window !== "undefined") {
+  supabase.auth.onAuthStateChange((event) => {
+    if (event !== "PASSWORD_RECOVERY") return;
+    try {
+      sessionStorage.setItem(RECOVERY_KEY, "1");
+    } catch {
+      /* gizli sekme */
+    }
+    window.dispatchEvent(new Event(PASSWORD_RECOVERY_EVENT));
+  });
+}
+
+export function isPasswordRecovery(): boolean {
+  try {
+    return sessionStorage.getItem(RECOVERY_KEY) === "1";
+  } catch {
+    return false;
+  }
+}
+
+export function clearPasswordRecovery(): void {
+  try {
+    sessionStorage.removeItem(RECOVERY_KEY);
+  } catch {
+    /* gizli sekme */
+  }
+}

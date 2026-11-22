@@ -1,8 +1,8 @@
 import { createHash, randomBytes } from "node:crypto";
 import bcrypt from "bcryptjs";
 import type { FastifyInstance } from "fastify";
-import { authRepository, toAuthUser } from "@getyourboat/database";
-import type { AuthSessionDTO, CaptainLoginInput, SignupInput } from "@getyourboat/shared";
+import { authRepository, toAuthUser } from "@ahoy/database";
+import type { AuthSessionDTO, CaptainLoginInput, SignupInput } from "@ahoy/shared";
 import { conflict, HttpError } from "../../../lib/errors.js";
 import { env } from "../../../config/env.js";
 
@@ -54,7 +54,7 @@ function clearLoginAttempts(email: string) {
 
 async function issueSession(
   app: FastifyInstance,
-  user: { id: string; email: string; fullName: string | null; role: import("@getyourboat/shared").ProfileRole },
+  user: { id: string; email: string; fullName: string | null; role: import("@ahoy/shared").ProfileRole },
   rememberMe?: boolean
 ): Promise<AuthSessionDTO> {
   const accessToken = app.jwt.sign(

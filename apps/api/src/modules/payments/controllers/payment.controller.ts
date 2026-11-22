@@ -3,7 +3,7 @@ import {
   BookingPaymentStatus,
   markPaymentPaidSchema,
   type BookingPaymentListQuery,
-} from "@getyourboat/shared";
+} from "@ahoy/shared";
 import { parseDetailed } from "../../../lib/validate.js";
 import * as service from "../services/payment.service.js";
 

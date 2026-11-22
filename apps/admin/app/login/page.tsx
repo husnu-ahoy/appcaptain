@@ -1,6 +1,6 @@
 "use client";
 
-import { Alert, AuthLayout, Button, Field, Input } from "@getyourboat/ui";
+import { Alert, AuthLayout, Button, Field, Input } from "@ahoy/ui";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { api, ApiError } from "../../lib/api";

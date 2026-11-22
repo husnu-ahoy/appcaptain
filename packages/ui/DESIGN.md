@@ -1,6 +1,6 @@
-# GetYourBoat — Design System
+# Ahoy — Design System
 
-GetYourGuide-inspired. This is the foundation of the `@getyourboat/ui` component
+GetYourGuide-inspired. This is the foundation of the `@ahoy/ui` component
 library. **When a new component is needed: update this doc first, then write code.**
 Tokens live in `packages/config/tailwind/index.js` (shared Tailwind preset).
 

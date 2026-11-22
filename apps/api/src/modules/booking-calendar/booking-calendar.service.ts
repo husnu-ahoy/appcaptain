@@ -1,9 +1,9 @@
-import { bookingCalendarRepository } from "@getyourboat/database";
-import type { CreateBlockData, CreateMockReservationData, MockReservationRow, UpdateBlockData } from "@getyourboat/database";
+import { bookingCalendarRepository } from "@ahoy/database";
+import type { CreateBlockData, CreateMockReservationData, MockReservationRow, UpdateBlockData } from "@ahoy/database";
 import {
   BookingModel,
   SlotStatus,
-} from "@getyourboat/shared";
+} from "@ahoy/shared";
 import type {
   AvailabilityMap,
   BlockResponseDTO,
@@ -11,7 +11,7 @@ import type {
   CreateBlockInput,
   TimeSlot,
   UpdateBlockInput,
-} from "@getyourboat/shared";
+} from "@ahoy/shared";
 import { badRequest, conflict, forbidden, notFound } from "../../lib/errors.js";
 import type { AuthUser } from "../../plugins/captain-auth.js";
 import { loadBoatForCalendar } from "./authorization.js";

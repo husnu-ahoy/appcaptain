@@ -3,11 +3,11 @@ import {
   createBlockSchema,
   getAvailabilitySchema,
   updateBlockSchema,
-} from "@getyourboat/shared";
+} from "@ahoy/shared";
 import { parseDetailed } from "../../lib/validate.js";
 import { loadBoatForCalendar } from "./authorization.js";
 import * as service from "./booking-calendar.service.js";
-import { BookingModel } from "@getyourboat/shared";
+import { BookingModel } from "@ahoy/shared";
 import { badRequest } from "../../lib/errors.js";
 
 const boatId = (req: FastifyRequest) => (req.params as { boatId: string }).boatId;

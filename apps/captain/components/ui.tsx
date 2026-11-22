@@ -1,5 +1,5 @@
 // Captain re-exports the shared design-system primitives so all screens use a
-// single source of truth (@getyourboat/ui). Add app-specific wrappers here only
+// single source of truth (@ahoy/ui). Add app-specific wrappers here only
 // when truly captain-specific.
 export {
   Input,
@@ -14,4 +14,4 @@ export {
   Badge,
   FormErrorBanner,
   Modal,
-} from "@getyourboat/ui";
+} from "@ahoy/ui";

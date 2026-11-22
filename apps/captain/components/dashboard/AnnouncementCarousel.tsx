@@ -1,8 +1,8 @@
 "use client";
 
 import { useState } from "react";
-import { Banner, Carousel, Skeleton, faLightbulb } from "@getyourboat/ui";
-import type { AnnouncementDTO } from "@getyourboat/shared";
+import { Banner, Carousel, Skeleton, faLightbulb } from "@ahoy/ui";
+import type { AnnouncementDTO } from "@ahoy/shared";
 import { useAnnouncements } from "../../lib/api/dashboard";
 
 export function AnnouncementCarousel() {

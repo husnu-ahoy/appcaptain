@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { AhoyLogo, Button, FontAwesomeIcon, faArrowRight } from "@getyourboat/ui";
+import { AhoyLogo, Button, FontAwesomeIcon, faArrowRight } from "@ahoy/ui";
 import { Protected } from "../../../components/protected";
 import { Alert } from "../../../components/ui";
 import { TopBarButton, WizardFooterBar } from "../../../components/wizard/focus";

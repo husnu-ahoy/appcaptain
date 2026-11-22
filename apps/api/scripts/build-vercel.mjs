@@ -14,11 +14,11 @@ const engineFile = "libquery_engine-rhel-openssl-3.0.x.so.node";
 
 console.log("Monorepo root:", monorepoRoot);
 
-execSync("pnpm --filter @getyourboat/shared build", {
+execSync("pnpm --filter @ahoy/shared build", {
   cwd: monorepoRoot,
   stdio: "inherit",
 });
-execSync("pnpm --filter @getyourboat/database build", {
+execSync("pnpm --filter @ahoy/database build", {
   cwd: monorepoRoot,
   stdio: "inherit",
 });
@@ -27,7 +27,7 @@ function copyPrismaEngines() {
   const enginePath = join(prismaClientDir, engineFile);
   if (!existsSync(enginePath)) {
     throw new Error(
-      `Missing Prisma engine at ${enginePath}. Run pnpm --filter @getyourboat/database db:generate first.`
+      `Missing Prisma engine at ${enginePath}. Run pnpm --filter @ahoy/database db:generate first.`
     );
   }
 
@@ -60,8 +60,8 @@ await esbuild.build({
     "utf-8-validate",
   ],
   alias: {
-    "@getyourboat/database": join(monorepoRoot, "packages/database/dist/index.cjs"),
-    "@getyourboat/shared": join(monorepoRoot, "packages/shared/dist/index.js"),
+    "@ahoy/database": join(monorepoRoot, "packages/database/dist/index.cjs"),
+    "@ahoy/shared": join(monorepoRoot, "packages/shared/dist/index.js"),
   },
 });
 

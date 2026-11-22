@@ -79,10 +79,10 @@ export default function MessageCaptainModal({ boatId, boatTitle, hostName, hostA
               <CircleCheck size={30} strokeWidth={1.8} aria-hidden="true" />
             </span>
             <h2 id="msg-title">Mesajın {hostName} kaptana iletildi</h2>
-            <p>Kaptan yanıt verdiğinde konuşmayı Mesajlarım sayfasından takip edebilirsin.</p>
+            <p>Kaptan yanıt verdiğinde konuşmayı Mesajlar sayfasından takip edebilirsin.</p>
             <div className="sh-msg-actions">
               <Link href={`/mesajlarim?c=${sentId}`} className="sh-btn sh-btn--navy">
-                Mesajlarıma git
+                Mesajlara git
               </Link>
               <button type="button" className="sh-ld-outline" onClick={onClose}>
                 Kapat

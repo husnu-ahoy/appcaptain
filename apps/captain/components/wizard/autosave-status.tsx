@@ -6,7 +6,7 @@ import {
   faCircleCheck,
   faSpinner,
   faTriangleExclamation,
-} from "@getyourboat/ui";
+} from "@ahoy/ui";
 import { useEffect, useState } from "react";
 import type { AutosaveStatus } from "../../lib/hooks/useAutosaveDraft";
 

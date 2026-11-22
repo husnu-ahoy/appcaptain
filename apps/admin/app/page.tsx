@@ -23,7 +23,7 @@ import {
   faUsers,
   faWallet,
   type IconDefinition,
-} from "@getyourboat/ui";
+} from "@ahoy/ui";
 import { api, ApiError } from "../lib/api";
 
 type DashboardData = Awaited<ReturnType<typeof api.getDashboard>>;

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { AhoyLogo } from "@getyourboat/ui";
+import { AhoyLogo } from "@ahoy/ui";
 import type { ReactNode } from "react";
 
 const LINKS = [

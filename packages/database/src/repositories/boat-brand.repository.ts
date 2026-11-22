@@ -1,5 +1,5 @@
-import type { BoatBrandDTO, BoatModelDTO, BrandModelRequestDTO } from "@getyourboat/shared";
-import type { BoatBrandCategory, BrandModelRequestStatus } from "@getyourboat/shared";
+import type { BoatBrandDTO, BoatModelDTO, BrandModelRequestDTO } from "@ahoy/shared";
+import type { BoatBrandCategory, BrandModelRequestStatus } from "@ahoy/shared";
 
 export interface BoatBrandRepository {
   listBrands(category?: BoatBrandCategory, activeOnly?: boolean): Promise<BoatBrandDTO[]>;

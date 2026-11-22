@@ -11,14 +11,14 @@ import {
   faSpinner,
   faWallet,
   type IconDefinition,
-} from "@getyourboat/ui";
+} from "@ahoy/ui";
 import {
   BOOKING_PAYMENT_STATUS_LABELS,
   BookingPaymentStatus,
   formatBookingPaymentAmount,
   type BookingPaymentDTO,
   type BookingPaymentStats,
-} from "@getyourboat/shared";
+} from "@ahoy/shared";
 import { AppShell } from "../../components/layout/AppShell";
 import { api, ApiError } from "../../lib/api";
 

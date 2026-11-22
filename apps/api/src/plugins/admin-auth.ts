@@ -2,9 +2,9 @@ import fp from "fastify-plugin";
 import jwt from "jsonwebtoken";
 import crypto from "node:crypto";
 import type { FastifyReply, FastifyRequest } from "fastify";
-import type { AdminRole } from "@getyourboat/shared";
+import type { AdminRole } from "@ahoy/shared";
 import { env } from "../config/env.js";
-import { prisma } from "@getyourboat/database";
+import { prisma } from "@ahoy/database";
 
 export interface AdminAuthUser {
   id: string;

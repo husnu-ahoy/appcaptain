@@ -1,4 +1,4 @@
-import type { AuthResponseDTO, AuthUserDTO } from "@getyourboat/shared";
+import type { AuthResponseDTO, AuthUserDTO } from "@ahoy/shared";
 import { setAccessToken } from "./token-store";
 
 let refreshTimer: ReturnType<typeof setTimeout> | null = null;

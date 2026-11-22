@@ -4,8 +4,8 @@ import { useRouter } from 'next/navigation'
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { CircleCheck, Hourglass, Minus, Moon, Plus, ShieldCheck, Sun, Zap, type LucideIcon } from 'lucide-react'
-import type { SerializedBoatDTO } from '@getyourboat/shared'
-import RangeCalendar from '@/components/sh/RangeCalendar'
+import type { SerializedBoatDTO } from '@ahoy/shared'
+import RangeCalendar, { type DateRangeValue } from '@/components/sh/RangeCalendar'
 import { fetchAvailability, type BlockedRange } from '@/lib/api'
 import { TIME_OPTIONS, checkoutHref, estimatePrice, minutesOf } from '@/lib/bookingPrice'
 import { formatDayMonth, formatMoney, listingModelLabel, priceUnit } from '@/lib/boatFormat'
@@ -15,12 +15,22 @@ import TripPickerModal, { tripIsComplete, type TripValue } from './TripPickerMod
  * İlan sayfasının rezervasyon durumu. Kart, satır içi müsaitlik takvimi ve
  * üst çubuk aynı state'i paylaşır; bu yüzden state ListingDetail'de tutulur.
  */
-export function useBookingState(boat: SerializedBoatDTO) {
+export function useBookingState(boat: SerializedBoatDTO, initialRange?: DateRangeValue) {
   const prices = useMemo(() => boat.pricing.filter(p => p.price > 0), [boat.pricing])
-  const [priceKey, setPriceKey] = useState(prices[0]?.listingModelKey ?? '')
+  // Aramadan çok günlük tarih geldiyse saatlik olmayan ilk fiyat seçeneğiyle başla.
+  const [priceKey, setPriceKey] = useState(() => {
+    const multiDay = !!initialRange?.start && !!initialRange.end && initialRange.end > initialRange.start
+    const preferred = multiDay ? prices.find(p => p.listingModelKey !== 'hourly') : undefined
+    return (preferred ?? prices[0])?.listingModelKey ?? ''
+  })
   const price = prices.find(p => p.listingModelKey === priceKey) ?? prices[0] ?? null
   const hourly = price?.listingModelKey === 'hourly'
-  const [trip, setTrip] = useState<TripValue>({ range: { start: null, end: null }, guests: 1, startTime: null, endTime: null })
+  const [trip, setTrip] = useState<TripValue>(() => {
+    const start = initialRange?.start ?? null
+    // Saatlik kiralamada tek gün seçilir.
+    const range = start ? { start, end: hourly ? start : (initialRange?.end ?? null) } : { start: null, end: null }
+    return { range, guests: 1, startTime: null, endTime: null }
+  })
   const [blocked, setBlocked] = useState<BlockedRange[]>([])
 
   useEffect(() => {

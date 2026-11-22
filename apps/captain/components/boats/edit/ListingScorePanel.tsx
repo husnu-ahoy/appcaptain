@@ -5,8 +5,8 @@ import {
   calculateWizardListingScore,
   deriveCompletedWizardSteps,
   resolveStepInfoCardKey,
-} from "@getyourboat/shared";
-import type { FeatureSubTabId, OnboardingStep } from "@getyourboat/shared";
+} from "@ahoy/shared";
+import type { FeatureSubTabId, OnboardingStep } from "@ahoy/shared";
 import type { SerializedBoat } from "../../../lib/types";
 import { STEP_LABELS } from "../../../lib/onboarding";
 

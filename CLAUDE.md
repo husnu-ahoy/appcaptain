@@ -1,4 +1,4 @@
-# GetYourBoat / SeaHub — Project Instructions
+# Ahoy — Project Instructions
 
 ## Stack
 - Monorepo: pnpm workspaces + Turborepo
@@ -25,10 +25,10 @@
 - Run typecheck (`npx tsc --noEmit`) on both affected apps before committing
 
 ## Start commands
-- API: `pnpm --filter @getyourboat/api dev`
-- Admin: `pnpm --filter @getyourboat/admin dev`
-- Captain: `pnpm --filter @getyourboat/captain dev`
-- DB build: `pnpm --filter @getyourboat/database build`
+- API: `pnpm --filter @ahoy/api dev`
+- Admin: `pnpm --filter @ahoy/admin dev`
+- Captain: `pnpm --filter @ahoy/captain dev`
+- DB build: `pnpm --filter @ahoy/database build`
 
 ## Pre-launch wiring checklist (incomplete as of 2026-07-16)
 
@@ -56,10 +56,10 @@
 - For local dev: `apps/admin/.env.local` must set `NEXT_PUBLIC_API_URL=http://localhost:4000` so admin app talks to local API instead of Vercel
 
 ### Admin user seed
-- Run `pnpm --filter @getyourboat/database exec tsx seeds/seed-admin-user.ts` to create admin@getyourboat.com
+- Run `pnpm --filter @ahoy/database exec tsx seeds/seed-admin-user.ts` to create admin@getyourboat.com
 - Script is idempotent (safe to re-run)
 
 ### Vercel build pipeline
 - API is bundled as a single CJS serverless function via `apps/api/scripts/build-vercel.mjs`
-- Uses esbuild aliases: `@getyourboat/database` → `dist/index.cjs` (NOT .js — will break if changed)
+- Uses esbuild aliases: `@ahoy/database` → `dist/index.cjs` (NOT .js — will break if changed)
 - Prisma engine must be copied: script handles this via `copyPrismaEngines()`

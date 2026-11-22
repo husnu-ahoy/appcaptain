@@ -7,7 +7,7 @@ import {
   EXPERIENCE_STEP_ORDER,
   ExperienceStatus,
   experienceStepIndex,
-} from "@getyourboat/shared";
+} from "@ahoy/shared";
 
 export {
   EXPERIENCE_CATEGORY_LABELS,

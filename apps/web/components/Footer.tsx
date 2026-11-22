@@ -137,7 +137,7 @@ export default function Footer() {
             © 2026 Ahoy Boats, Inc. <i>·</i>
             <Link href="#">Gizlilik Politikası</Link> <i>·</i>
             <Link href="#">Kullanım Koşulları</Link> <i>·</i>
-            <Link href="#">Site Haritası</Link> <i>·</i>
+            <Link href="/site-haritasi">Site Haritası</Link> <i>·</i>
             <Link href="#">Çerez Tercihleri</Link>
           </p>
           <div className="sh-ft-locale">

@@ -1,6 +1,6 @@
 "use client";
 
-import { cn, FontAwesomeIcon, faCheck, type IconDefinition } from "@getyourboat/ui";
+import { cn, FontAwesomeIcon, faCheck, type IconDefinition } from "@ahoy/ui";
 
 export interface StepperItem {
   id: string;

@@ -3,7 +3,7 @@ import type {
   BookingPaymentListQuery,
   BookingPaymentStats,
   BookingPaymentStatus,
-} from "@getyourboat/shared";
+} from "@ahoy/shared";
 
 export interface CreateBookingPaymentData {
   bookingId: string;

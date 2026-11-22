@@ -1,7 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import type { OnboardingStep } from "@getyourboat/shared";
+import type { OnboardingStep } from "@ahoy/shared";
 import { api, ApiError } from "../api";
 import type { SerializedBoat } from "../types";
 

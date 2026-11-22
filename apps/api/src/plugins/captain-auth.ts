@@ -1,7 +1,7 @@
 import fp from "fastify-plugin";
 import type { FastifyReply, FastifyRequest } from "fastify";
-import { authRepository } from "@getyourboat/database";
-import type { ProfileRole } from "@getyourboat/shared";
+import { authRepository } from "@ahoy/database";
+import type { ProfileRole } from "@ahoy/shared";
 
 export interface AuthUser {
   id: string;

@@ -1,4 +1,4 @@
-# GetYourBoat — Implementation Roadmap
+# Ahoy — Implementation Roadmap
 
 A yacht/boat rental **marketplace**. Customers search & book boats; captains list &
 manage boats, track reservations and earnings; admins moderate. Real-time

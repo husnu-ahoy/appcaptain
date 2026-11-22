@@ -1,4 +1,4 @@
-import type { BlockReason, BlockResponseDTO, BookingModel } from "@getyourboat/shared";
+import type { BlockReason, BlockResponseDTO, BookingModel } from "@ahoy/shared";
 
 export interface CreateBlockData {
   boatId: string;

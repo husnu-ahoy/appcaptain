@@ -10,7 +10,7 @@ import {
   type DiscountListQuery,
   type DiscountListResponse,
   type UpdateDiscountInput,
-} from "@getyourboat/shared";
+} from "@ahoy/shared";
 const BASE = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000";
 const V1 = `${BASE}/api/v1`;
 

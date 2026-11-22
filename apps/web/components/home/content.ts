@@ -11,10 +11,18 @@ export const HERO_SUGGESTIONS = [
 ]
 
 export const PROMOS = [
-  { img: '/home/promo-boat.webp', title: ['Özgürce keşfet,', 'tatilini değerli kıl.'], cta: 'Hemen tekne kirala', href: '/tekne-kiralama' },
-  { img: '/home/promo-experience.webp', title: ['Sıra dışı anlara', 'şahit ol.'], cta: 'Deneyimleri keşfet', href: '/deneyimler' },
-  { img: '/home/promo-location.webp', title: ['Görmediğin', 'mekanları gör.'], cta: 'Lokasyonlara göz at', href: '/#lokasyonlar' },
+  { img: '/home/promo-boat-v2.webp', title: ['Özgürce keşfet,', 'tatilini değerli kıl.'], cta: 'Hemen tekne kirala', href: '/tekne-kiralama' },
+  { img: '/home/promo-experience-v2.webp', title: ['Sıra dışı anlara', 'şahit ol.'], cta: 'Deneyimleri keşfet', href: '/deneyimler' },
+  { img: '/home/promo-location-v2.webp', title: ['Görmediğin', 'mekanları gör.'], cta: 'Lokasyonlara göz at', href: '/#lokasyonlar' },
 ]
+
+/** Kampanya bandı (tanıtım kartlarının altında). Oran ve tarih yürürlükteki kampanyayla aynı olmalı. */
+export const DEAL = {
+  title: 'İndirimler bitiyor: Rezervasyonlar şimdi %24 daha fırsatlı.',
+  text: 'Zaman daralıyor—sen de indirimlerden hemen yararlanmak için 7 Ekim öncesine kadar rezervasyonunu oluştur.',
+  cta: 'Şimdi oluştur',
+  href: '/tekne-kiralama',
+}
 
 export const BOAT_TYPES = [
   { img: '/home/boat-motoryat.webp', title: 'Motoryat', meta: '850 tekne mevcut', href: '/tekne-kiralama?type=motoryacht' },
@@ -24,10 +32,10 @@ export const BOAT_TYPES = [
 ]
 
 export const EXPERIENCES = [
-  { img: '/home/exp-gunbatimi.webp', badge: '52 deneyim mevcut', title: 'Gün Batımı Turu', desc: 'Yelkenler altında eşsiz bir gün batımı anısı edinin', href: '/deneyimler' },
-  { img: '/home/exp-dalis.webp', badge: '37 deneyim mevcut', title: 'Dalış Kursu', desc: 'Sualtı dünyasını profesyonel rehberlerle keşfedin', href: '/deneyimler' },
-  { img: '/home/exp-adalar.webp', badge: '44 deneyim mevcut', title: 'Adalar', desc: 'Saklı koyları ve el değmemiş adaları birlikte gezin', href: '/deneyimler' },
-  { img: '/home/exp-balikcilik.webp', badge: '24 deneyim mevcut', title: 'Balıkçılık Dersi', desc: 'Sabah saatlerinde sessiz koyda geleneksel balıkçılık deneyimleyin', href: '/deneyimler' },
+  { img: '/home/exp-gunbatimi.webp', badge: '52 deneyim mevcut', title: 'Gün Batımı Turu', desc: 'Yelkenler altında eşsiz bir gün batımı anısı edinin', href: '/deneyimler?tur=gun-batimi' },
+  { img: '/home/exp-dalis.webp', badge: '37 deneyim mevcut', title: 'Dalış Kursu', desc: 'Sualtı dünyasını profesyonel rehberlerle keşfedin', href: '/deneyimler?tur=dalis-snorkel' },
+  { img: '/home/exp-adalar.webp', badge: '44 deneyim mevcut', title: 'Adalar', desc: 'Saklı koyları ve el değmemiş adaları birlikte gezin', href: '/deneyimler?tur=gunluk-turlar' },
+  { img: '/home/exp-balikcilik.webp', badge: '24 deneyim mevcut', title: 'Balıkçılık Dersi', desc: 'Sabah saatlerinde sessiz koyda geleneksel balıkçılık deneyimleyin', href: '/deneyimler?tur=balik-turlari' },
 ]
 
 export interface HomeLocation {
@@ -128,7 +136,8 @@ export const BLOG_POSTS = [
 type LinkItem = { title: string; sub: string; href: string }
 
 const boat = (title: string, sub: string): LinkItem => ({ title, sub, href: '/tekne-kiralama' })
-const exp = (title: string, sub: string): LinkItem => ({ title, sub, href: '/deneyimler' })
+/** tur: /deneyimler sayfasındaki deneyim türü sekmesi (lib/content/experienceTypes) */
+const exp = (title: string, sub: string, tur?: string): LinkItem => ({ title, sub, href: tur ? `/deneyimler?tur=${tur}` : '/deneyimler' })
 const city = (title: string, sub: string): LinkItem => ({ title, sub, href: `/tekne-kiralama?city=${encodeURIComponent(title)}` })
 
 export const POPULAR_SEARCH_TABS: { key: string; label: string; items: LinkItem[] }[] = [
@@ -145,8 +154,8 @@ export const POPULAR_SEARCH_TABS: { key: string; label: string; items: LinkItem[
     key: 'experience',
     label: 'Deneyim tipi',
     items: [
-      exp('Gün Batımı Turu', '52 deneyim mevcut'), exp('Dalış Kursu', '37 deneyim mevcut'), exp('Ada Turu', '44 deneyim mevcut'), exp('Balıkçılık Dersi', '24 deneyim mevcut'),
-      exp('Şnorkel Turu', '31 deneyim mevcut'), exp('Yelken Eğitimi', '18 deneyim mevcut'), exp('Tekne Partisi', '26 deneyim mevcut'), exp('Yoga Turu', '9 deneyim mevcut'),
+      exp('Gün Batımı Turu', '52 deneyim mevcut', 'gun-batimi'), exp('Dalış Kursu', '37 deneyim mevcut', 'dalis-snorkel'), exp('Ada Turu', '44 deneyim mevcut', 'gunluk-turlar'), exp('Balıkçılık Dersi', '24 deneyim mevcut', 'balik-turlari'),
+      exp('Şnorkel Turu', '31 deneyim mevcut', 'dalis-snorkel'), exp('Yelken Eğitimi', '18 deneyim mevcut', 'dersler'), exp('Tekne Partisi', '26 deneyim mevcut', 'ozel-deneyimler'), exp('Yoga Turu', '9 deneyim mevcut'),
     ],
   },
   {

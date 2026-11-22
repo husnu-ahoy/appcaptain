@@ -1,6 +1,6 @@
 "use client";
 
-import { FontAwesomeIcon, faPlus, faXmark } from "@getyourboat/ui";
+import { FontAwesomeIcon, faPlus, faXmark } from "@ahoy/ui";
 import { useId, useState, type KeyboardEvent } from "react";
 import { Label } from "../ui";
 

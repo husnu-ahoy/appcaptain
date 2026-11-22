@@ -94,8 +94,8 @@ export default function CookiesPage() {
       <Section title="İletişim">
         <p>
           Çerez uygulamalarımız hakkında sorularınız için:{" "}
-          <Link href="mailto:privacy@seahub.com" className="text-brand-600 hover:underline">
-            privacy@seahub.com
+          <Link href="mailto:privacy@ahoyboats.com" className="text-brand-600 hover:underline">
+            privacy@ahoyboats.com
           </Link>
         </p>
       </Section>

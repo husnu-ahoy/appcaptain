@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { noStore, rejectCrossSite } from "../guard";
 
 const API = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000";
 const REFRESH_COOKIE = "gyb_refresh";
@@ -34,9 +35,11 @@ async function proxyAuth(
     });
   }
 
-  return response;
+  return noStore(response);
 }
 
 export async function POST(req: Request) {
+  const refused = rejectCrossSite(req, { json: true });
+  if (refused) return refused;
   return proxyAuth("signup", req, { forwardBody: true });
 }

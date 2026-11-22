@@ -8,7 +8,7 @@ import {
   faLock,
   faShieldHalved,
   type IconDefinition,
-} from "@getyourboat/ui";
+} from "@ahoy/ui";
 import { LegalTitle } from "./components";
 
 export const metadata: Metadata = { title: "Yasal — Ahoy Kaptan" };

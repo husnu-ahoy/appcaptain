@@ -15,7 +15,7 @@ import {
   faTag,
   faTrash,
   faXmark,
-} from "@getyourboat/ui";
+} from "@ahoy/ui";
 import { useEffect, useMemo, useState } from "react";
 import {
   DiscountDayFilter,
@@ -25,7 +25,7 @@ import {
   DISCOUNT_TARGET_LABELS,
   formatDiscountValue,
   type DiscountDTO,
-} from "@getyourboat/shared";
+} from "@ahoy/shared";
 import { AppShell } from "../../components/layout/AppShell";
 import { useAuth } from "../../components/auth-provider";
 import { api, ApiError } from "../../lib/api";

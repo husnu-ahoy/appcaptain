@@ -24,7 +24,7 @@ import {
   faUserCheck,
   LocationPicker,
   type IconDefinition,
-} from "@getyourboat/ui";
+} from "@ahoy/ui";
 import {
   FEATURE_SUB_TABS,
   ENGINE_TYPE_LABELS,
@@ -56,7 +56,7 @@ import {
   LOCATION_FORM_FIELD_KEYS,
   type FeatureSubTabId,
   type FieldValueMap,
-} from "@getyourboat/shared";
+} from "@ahoy/shared";
 import { useMemo, useRef, useState, useEffect, useCallback, type ReactNode } from "react";
 import { api, ApiError, uploadToStorage } from "../../lib/api";
 import {
@@ -98,7 +98,7 @@ import {
   WizardHeading,
   tileClass,
 } from "./focus";
-import type { CabinConfigurationInput } from "@getyourboat/shared";
+import type { CabinConfigurationInput } from "@ahoy/shared";
 
 /** Picks a context icon for a listing model from its label/key. */
 function listingModelIcon(labelOrKey: string): IconDefinition {

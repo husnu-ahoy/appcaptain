@@ -1,6 +1,6 @@
 /**
  * Reads boat-brands-source.xlsx → boat-brands.json
- * Run: pnpm --filter @getyourboat/database convert:boat-brands
+ * Run: pnpm --filter @ahoy/database convert:boat-brands
  */
 import { readFileSync, writeFileSync } from "node:fs";
 import { dirname, resolve } from "node:path";

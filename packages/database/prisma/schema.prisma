@@ -1,4 +1,4 @@
-// GetYourBoat — Prisma schema
+// Ahoy — Prisma schema
 // Postgres (Supabase). Run `pnpm db:generate` after changes.
 //
 // Boat onboarding lookup/config tables are populated by the seed script from

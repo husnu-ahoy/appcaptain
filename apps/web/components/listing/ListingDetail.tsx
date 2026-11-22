@@ -32,16 +32,16 @@ import {
   Zap,
   type LucideIcon,
 } from 'lucide-react'
-import { ApprovalType, toBoatDetailViewModel, type SerializedBoatDTO } from '@getyourboat/shared'
+import { ApprovalType, toBoatDetailViewModel, type SerializedBoatDTO } from '@ahoy/shared'
 import type { PublicBoatSummary } from '@/lib/api'
 import BoatListCard from '@/components/boats/BoatListCard'
 import AuthModal from '@/components/auth/AuthModal'
 import AhoyGuarantee from '@/components/sh/AhoyGuarantee'
 import Art3D from '@/components/sh/Art3D'
 import ShareModal from '@/components/sh/ShareModal'
-import RangeCalendar from '@/components/sh/RangeCalendar'
+import RangeCalendar, { type DateRangeValue } from '@/components/sh/RangeCalendar'
 import { boatTypeLabel, cleanText, formatDayMonth, formatMoney, prettyValue } from '@/lib/boatFormat'
-import { estimatePrice } from '@/lib/bookingPrice'
+import { estimatePrice, parseDate } from '@/lib/bookingPrice'
 import { setPendingFavorite, useFavorites } from '@/lib/favorites'
 import ListingGallery from './ListingGallery'
 import BookingPanel, { useBookingState, type ListingSection } from './BookingPanel'
@@ -54,6 +54,9 @@ import { buildRules } from './listingRules'
 interface Props {
   boat: SerializedBoatDTO
   similar: PublicBoatSummary[]
+  /** Aramadan gelen tarihler ("2026-11-29"); rezervasyon kartı bunlarla dolu açılır. */
+  initialStart?: string
+  initialEnd?: string
 }
 
 type AnyIcon = FeatureIcon | LucideIcon
@@ -105,9 +108,9 @@ const MISSING_PREVIEW = 2
 const SERVICE_PREVIEW = 5
 const SPEC_PREVIEW = 6
 
-export default function ListingDetail({ boat, similar }: Props) {
+export default function ListingDetail({ boat, similar, initialStart, initialEnd }: Props) {
   const model = useMemo(() => toBoatDetailViewModel(boat), [boat])
-  const booking = useBookingState(boat)
+  const booking = useBookingState(boat, searchRange(initialStart, initialEnd))
   // "Tümünü göster" listeleri sayfayı uzatmak yerine popup'ta açılır.
   const [sheet, setSheet] = useState<'amenities' | 'services' | 'specs' | null>(null)
   const closeSheet = useCallback(() => setSheet(null), [])
@@ -688,7 +691,7 @@ export default function ListingDetail({ boat, similar }: Props) {
         <div className="sh-toast" role="status">
           <Heart size={16} strokeWidth={2.2} fill={toast.link ? 'currentColor' : 'none'} aria-hidden="true" />
           <span>{toast.text}</span>
-          {toast.link && <Link href="/hesabim#favoriler">Favorilerim</Link>}
+          {toast.link && <Link href="/favorilerim">Favoriler</Link>}
         </div>
       )}
 
@@ -833,6 +836,17 @@ function SpecSheetContent({ rows }: { rows: Row[] }) {
 }
 
 /** Katılım tarihinden "4 aydır ilan sahibi" / "2 yıldır ilan sahibi". */
+/** Aramadan gelen tarih aralığı: geçmiş ya da ters sıralı tarihler yok sayılır. */
+function searchRange(start?: string, end?: string): DateRangeValue | undefined {
+  const s = parseDate(start)
+  if (!s) return undefined
+  const today = new Date()
+  today.setHours(0, 0, 0, 0)
+  if (s < today) return undefined
+  const e = parseDate(end)
+  return { start: s, end: e && e >= s ? e : null }
+}
+
 function hostSince(joinedAt: string): string {
   const joined = new Date(joinedAt)
   const now = new Date()

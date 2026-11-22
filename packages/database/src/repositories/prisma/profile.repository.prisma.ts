@@ -1,5 +1,5 @@
-import type { ProfileSetupInput } from "@getyourboat/shared";
-import type { ProfileRole } from "@getyourboat/shared";
+import type { ProfileSetupInput } from "@ahoy/shared";
+import type { ProfileRole } from "@ahoy/shared";
 import { prisma } from "../../client.js";
 import type { AuthProfile, ProfileRepository } from "../profile.repository.js";
 import { toOwnerProfileDTO } from "../profile.repository.js";

@@ -4,7 +4,7 @@ import type {
   DiscountListQuery,
   DiscountListResponse,
   UpdateDiscountInput,
-} from "@getyourboat/shared";
+} from "@ahoy/shared";
 
 export interface BoatOption {
   id: string;

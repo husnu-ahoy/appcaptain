@@ -10,7 +10,7 @@ const inter = Inter({
 });
 
 export const metadata = {
-  title: "GetYourBoat — Playground",
+  title: "Ahoy — Playground",
   description: "Küçük, ayrı katman frontend — API'yi denemek için.",
 };
 

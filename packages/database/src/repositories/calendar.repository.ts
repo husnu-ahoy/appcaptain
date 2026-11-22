@@ -1,4 +1,4 @@
-import type { BlockReason, CalendarBlockDTO } from "@getyourboat/shared";
+import type { BlockReason, CalendarBlockDTO } from "@ahoy/shared";
 
 export interface CreateCalendarBlockData {
   boatId: string;

@@ -1,5 +1,5 @@
 import type { FastifyInstance } from "fastify";
-import { captainLoginSchema, logoutSchema, captainSignupSchema } from "@getyourboat/shared";
+import { captainLoginSchema, logoutSchema, captainSignupSchema } from "@ahoy/shared";
 import { parseDetailed } from "../../../lib/validate.js";
 import { env } from "../../../config/env.js";
 import * as service from "../services/auth.service.js";

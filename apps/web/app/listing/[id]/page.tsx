@@ -3,7 +3,7 @@ import { notFound } from 'next/navigation'
 import ListingDetail from '@/components/listing/ListingDetail'
 import { fetchBoat, fetchBoats } from '@/lib/api'
 
-type Props = { params: Promise<{ id: string }> }
+type Props = { params: Promise<{ id: string }>; searchParams?: Promise<{ start?: string; end?: string }> }
 
 export const dynamic = 'force-dynamic'
 
@@ -18,8 +18,9 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 }
 
-export default async function ListingIdPage({ params }: Props) {
+export default async function ListingIdPage({ params, searchParams }: Props) {
   const { id } = await params
+  const { start, end } = (await searchParams) ?? {}
   const [boat, list] = await Promise.all([fetchBoat(id), fetchBoats({ limit: 24 })])
   if (!boat) notFound()
 
@@ -32,5 +33,5 @@ export default async function ListingIdPage({ params }: Props) {
     .sort((a, b) => score(b) - score(a))
     .slice(0, 6)
 
-  return <ListingDetail boat={boat} similar={similar} />
+  return <ListingDetail boat={boat} similar={similar} initialStart={start} initialEnd={end} />
 }

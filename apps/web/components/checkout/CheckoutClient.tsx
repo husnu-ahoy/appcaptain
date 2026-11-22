@@ -20,7 +20,7 @@ import {
   X,
   type LucideIcon,
 } from 'lucide-react'
-import { toBoatDetailViewModel, type SerializedBoatDTO } from '@getyourboat/shared'
+import { toBoatDetailViewModel, type SerializedBoatDTO } from '@ahoy/shared'
 import AuthModal from '@/components/auth/AuthModal'
 import HostAvatar from '@/components/listing/HostAvatar'
 import TripPickerModal, { tripIsComplete, type TripValue } from '@/components/listing/TripPickerModal'

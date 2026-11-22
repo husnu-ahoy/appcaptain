@@ -9,14 +9,14 @@ import {
   faComments,
   faMagnifyingGlass,
   faPaperPlane,
-} from "@getyourboat/ui";
+} from "@ahoy/ui";
 import {
   BOOKING_STATUS_LABELS,
   GuestSenderType,
   type BookingStatus,
   type GuestConversationDTO,
   type GuestMessageDTO,
-} from "@getyourboat/shared";
+} from "@ahoy/shared";
 import { AppShell } from "../../components/layout/AppShell";
 import { api, ApiError } from "../../lib/api";
 

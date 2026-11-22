@@ -1,5 +1,5 @@
 import type { FastifyInstance, FastifyRequest } from "fastify";
-import { DocumentStatus, rejectDocumentSchema, rejectSchema } from "@getyourboat/shared";
+import { DocumentStatus, rejectDocumentSchema, rejectSchema } from "@ahoy/shared";
 import { parseDetailed } from "../../../lib/validate.js";
 import * as review from "../services/admin-review.service.js";
 

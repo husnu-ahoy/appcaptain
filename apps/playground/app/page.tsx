@@ -1,8 +1,8 @@
 "use client";
 
 import { useCallback, useEffect, useState } from "react";
-import type { OnboardingConfigDTO } from "@getyourboat/shared";
-import { Alert, Badge, Button, Card, CardContent, Spinner } from "@getyourboat/ui";
+import type { OnboardingConfigDTO } from "@ahoy/shared";
+import { Alert, Badge, Button, Card, CardContent, Spinner } from "@ahoy/ui";
 import { API_BASE, api } from "../lib/api";
 
 export default function Home() {
@@ -30,7 +30,7 @@ export default function Home() {
     <main className="mx-auto max-w-content px-4 py-10 sm:px-6">
       <header className="mb-8">
         <h1 className="text-display text-ink">
-          GetYourBoat <span className="text-brand-500">Playground</span>
+          Ahoy <span className="text-brand-500">Playground</span>
         </h1>
         <p className="mt-2 text-body text-gray-600">
           Ayrı katman frontend. Veri tek yoldan geliyor:{" "}
@@ -59,7 +59,7 @@ export default function Home() {
         <Alert variant="danger">
           <strong>API&apos;ye ulaşılamadı:</strong> {error}
           <div className="mt-1 text-caption">
-            API çalışıyor mu? <code>pnpm --filter @getyourboat/api dev</code>
+            API çalışıyor mu? <code>pnpm --filter @ahoy/api dev</code>
           </div>
         </Alert>
       ) : config ? (

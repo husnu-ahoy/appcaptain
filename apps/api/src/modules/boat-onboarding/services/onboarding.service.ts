@@ -1,8 +1,15 @@
 // @ts-nocheck — Zod output types are widened under Vercel's TS 5.9 project check.
 import { randomUUID } from "node:crypto";
-import { boatRepository, onboardingLookupRepository, prisma } from "@getyourboat/database";
+import { boatRepository, onboardingLookupRepository, prisma } from "@ahoy/database";
 import { sendModeratorNewListingEmail } from "../../../lib/email.js";
-import type { LookupModel } from "@getyourboat/database";
+import {
+  assertOwnedStoragePath,
+  boatFolder,
+  boatPlanFolder,
+  documentFolder,
+  isOwnedStoragePath,
+} from "../storage-paths.js";
+import type { LookupModel } from "@ahoy/database";
 import {
   ApprovalType,
   BoatStatus,
@@ -34,7 +41,7 @@ import {
   draftListingModelSchema,
   draftLocationSchema,
   draftPricingSchema,
-} from "@getyourboat/shared";
+} from "@ahoy/shared";
 import { badRequest, conflict, notFound } from "../../../lib/errors.js";
 import { sanitizeStorageFileName } from "../../../lib/sanitize.js";
 import {
@@ -256,6 +263,7 @@ export async function registerPhoto(
   altText?: string | null,
   isCover?: boolean
 ) {
+  assertOwnedStoragePath(storagePath, boatFolder(boatId));
   const count = await boatRepository.countPhotos(boatId);
   const makeCover = isCover ?? count === 0;
   if (makeCover) await boatRepository.clearCoverFlags(boatId);
@@ -283,7 +291,10 @@ export async function setCoverPhoto(boatId: string, photoId: string) {
 export async function deletePhoto(boatId: string, photoId: string) {
   const photo = await boatRepository.findPhoto(boatId, photoId);
   if (!photo) throw notFound("Photo not found");
-  await getSupabaseAdmin().storage.from(PHOTOS_BUCKET).remove([photo.storagePath]);
+  // Rows registered before path checks existed may point at another boat's file: drop the row only.
+  if (isOwnedStoragePath(photo.storagePath, boatFolder(boatId))) {
+    await getSupabaseAdmin().storage.from(PHOTOS_BUCKET).remove([photo.storagePath]);
+  }
   await boatRepository.deletePhoto(photoId);
   return { deleted: photoId };
 }
@@ -300,6 +311,7 @@ export async function createBoatPlanUploadUrl(boatId: string, fileName: string) 
 }
 
 export async function registerBoatPlan(boatId: string, storagePath: string) {
+  assertOwnedStoragePath(storagePath, boatPlanFolder(boatId));
   const url = publicUrl(PHOTOS_BUCKET, storagePath);
   await boatRepository.setBoatPlanUrl(boatId, url);
   await applyStepProgress(boatId, OnboardingStep.PHOTOS);
@@ -314,7 +326,10 @@ export async function deleteBoatPlan(boatId: string) {
     const idx = existing.indexOf(needle);
     if (idx >= 0) {
       const storagePath = decodeURIComponent(existing.slice(idx + needle.length));
-      await getSupabaseAdmin().storage.from(PHOTOS_BUCKET).remove([storagePath]);
+      // The plan URL is a feature value the captain can edit, so never trust it for deletes.
+      if (isOwnedStoragePath(storagePath, boatFolder(boatId))) {
+        await getSupabaseAdmin().storage.from(PHOTOS_BUCKET).remove([storagePath]);
+      }
     }
   }
   await boatRepository.setBoatPlanUrl(boatId, null);
@@ -347,6 +362,7 @@ export async function registerDocument(
   if (!(await boatRepository.documentTypeExists(documentTypeKey))) {
     throw badRequest("Unknown document type");
   }
+  assertOwnedStoragePath(storagePath, documentFolder(boatId, documentTypeKey));
   const doc = await boatRepository.addDocument(boatId, documentTypeKey, storagePath, null);
   await applyStepProgress(boatId, OnboardingStep.DOCUMENTS);
   return doc;
@@ -355,7 +371,9 @@ export async function registerDocument(
 export async function deleteDocument(boatId: string, documentId: string) {
   const doc = await boatRepository.findDocument(boatId, documentId);
   if (!doc) throw notFound("Document not found");
-  await getSupabaseAdmin().storage.from(DOCUMENTS_BUCKET).remove([doc.storagePath]);
+  if (isOwnedStoragePath(doc.storagePath, boatFolder(boatId))) {
+    await getSupabaseAdmin().storage.from(DOCUMENTS_BUCKET).remove([doc.storagePath]);
+  }
   await boatRepository.deleteDocument(documentId);
   return { deleted: documentId };
 }
@@ -527,16 +545,23 @@ export async function saveDraft(boatId: string, input: BoatDraftPatchInput) {
 
 export async function deleteBoat(boatId: string) {
   await getBoatState(boatId);
+  // bookings → booking_payments cascade on delete; keep the financial history instead.
+  if ((await prisma.booking.count({ where: { boatId } })) > 0) {
+    throw conflict("Rezervasyon geçmişi olan tekne silinemez. İlanı kaldırmak için destek ekibine yaz.");
+  }
   const paths = await boatRepository.listStoragePaths(boatId);
   const admin = getSupabaseAdmin();
+  const own = (p: string) => isOwnedStoragePath(p, boatFolder(boatId));
 
-  if (paths.photos.length > 0) {
-    await admin.storage.from(PHOTOS_BUCKET).remove(paths.photos);
+  const photoPaths = paths.photos.filter(own);
+  const documentPaths = paths.documents.filter(own);
+  if (photoPaths.length > 0) {
+    await admin.storage.from(PHOTOS_BUCKET).remove(photoPaths);
   }
-  if (paths.documents.length > 0) {
-    await admin.storage.from(DOCUMENTS_BUCKET).remove(paths.documents);
+  if (documentPaths.length > 0) {
+    await admin.storage.from(DOCUMENTS_BUCKET).remove(documentPaths);
   }
-  if (paths.boatPlan) {
+  if (paths.boatPlan && own(paths.boatPlan)) {
     await admin.storage.from(PHOTOS_BUCKET).remove([paths.boatPlan]);
   }
 

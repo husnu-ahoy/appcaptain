@@ -32,6 +32,23 @@ export interface ExperienceListItemDTO {
   updatedAt: string | Date;
 }
 
+/**
+ * Herkese açık liste (GET /public/experiences) öğesi: liste kartları ve filtreler
+ * için birkaç ek alan taşır. Hepsi detay ucunda zaten herkese açıktır. API'nin
+ * eski sürümleri bu alanları döndürmeyebileceği için isteğe bağlıdır.
+ */
+export interface PublicExperienceListItemDTO extends ExperienceListItemDTO {
+  secondaryCategories?: ExperienceCategory[];
+  productType?: ExperienceProductType | null;
+  meetingPoint?: string;
+  languages?: string[];
+  minAge?: number | null;
+  pickupOffered?: boolean;
+  pricingType?: ExperiencePricingType;
+  cancellationPolicy?: CancellationPolicyType;
+  childDiscountPercent?: number | null;
+}
+
 export interface ExperienceCustomerInfoFieldDTO {
   id: string;
   label: string;

@@ -7,9 +7,12 @@ import { customerAuthPlugin } from "./plugins/customer-auth.js";
 import { adminAuthPlugin } from "./plugins/admin-auth.js";
 import { registerRoutes } from "./routes/index.js";
 import { HttpError } from "./lib/errors.js";
-import { captainOrigins, adminOrigins, webOrigins } from "./config/env.js";
+import { captainOrigins, adminOrigins, webOrigins, env } from "./config/env.js";
+
+const SAFE_METHODS = new Set(["GET", "HEAD", "OPTIONS"]);
 
 export async function buildApp() {
+  const isDeployed = env.NODE_ENV === "production" || process.env.VERCEL === "1";
   const app = Fastify({
     logger: {
       transport:
@@ -17,6 +20,9 @@ export async function buildApp() {
           ? { target: "pino-pretty" }
           : undefined,
     },
+    // Vercel overwrites X-Forwarded-For with the client address; trust it there so
+    // req.ip (audit logs, rate limits) is the visitor rather than the proxy.
+    trustProxy: process.env.VERCEL === "1",
   });
 
   // Known production/local origins that are always allowed, merged with the
@@ -30,9 +36,12 @@ export async function buildApp() {
     "https://appcaptain-admin.vercel.app",
     "https://appcaptain-web.vercel.app",
   ];
+  // In production a dev server on someone's machine (or the localhost defaults of
+  // CAPTAIN_ORIGIN/ADMIN_ORIGIN/WEB_ORIGIN) must not get credentialed access.
+  const isLocalOrigin = (origin: string) => /^https?:\/\/(localhost|127\.0\.0\.1)(:\d+)?$/.test(origin);
   const allowedOrigins = [
     ...new Set([...defaultOrigins, ...captainOrigins, ...adminOrigins, ...webOrigins]),
-  ];
+  ].filter((origin) => !isDeployed || !isLocalOrigin(origin));
 
   // Public marketplace routes (apps/web) must be reachable from any origin,
   // with no credentials/cookies involved. Everything else (captain/admin
@@ -47,13 +56,26 @@ export async function buildApp() {
     },
   });
   await app.register(cookie);
+
+  // CSRF guard for cookie-authenticated sessions (admin_token is SameSite=None in
+  // production): a state-changing request that carries cookies must come from one
+  // of our own origins. Requests without cookies or without an Origin header
+  // (server-to-server, curl) are unaffected.
+  app.addHook("onRequest", async (req, reply) => {
+    if (SAFE_METHODS.has(req.method)) return;
+    const origin = req.headers.origin;
+    if (!origin || !req.headers.cookie) return;
+    if (allowedOrigins.includes(origin)) return;
+    return reply.code(403).send({ message: "Forbidden origin", code: "FORBIDDEN_ORIGIN" });
+  });
+
   await app.register(authPlugin); // legacy JWT (phase 0)
   await app.register(captainAuthPlugin);
   await app.register(customerAuthPlugin); // web müşterileri (Supabase oturumu)
   await app.register(adminAuthPlugin);
   await registerRoutes(app);
 
-  app.setErrorHandler((error: FastifyError, _req, reply) => {
+  app.setErrorHandler((error: FastifyError, req, reply) => {
     if (error instanceof HttpError) {
       const enriched = error as HttpError & { details?: unknown; fields?: unknown };
       return reply.code(error.statusCode).send({
@@ -64,10 +86,14 @@ export async function buildApp() {
         details: enriched.details,
       });
     }
-    app.log.error(error);
-    return reply.code(error.statusCode ?? 500).send({
-      message: error.message ?? "Internal Server Error",
-    });
+    const statusCode = error.statusCode ?? 500;
+    if (statusCode >= 500) {
+      // Never echo internal messages (Prisma, Supabase, stack details) to clients.
+      req.log.error({ err: error }, "unhandled error");
+      return reply.code(statusCode).send({ message: "Internal Server Error", requestId: req.id });
+    }
+    req.log.warn({ err: error }, "client error");
+    return reply.code(statusCode).send({ message: error.message ?? "Bad Request" });
   });
 
   return app;

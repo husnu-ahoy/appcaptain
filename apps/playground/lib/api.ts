@@ -1,4 +1,4 @@
-import type { OnboardingConfigDTO } from "@getyourboat/shared";
+import type { OnboardingConfigDTO } from "@ahoy/shared";
 
 /**
  * The ONLY way this frontend talks to the backend: a thin HTTP client.

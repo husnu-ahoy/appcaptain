@@ -1,6 +1,6 @@
 "use client";
 
-import type { ValidationFieldError } from "@getyourboat/shared";
+import type { ValidationFieldError } from "@ahoy/shared";
 import { useEffect, useRef, type ReactNode } from "react";
 import { Alert, Field, Label, Textarea } from "../ui";
 import {

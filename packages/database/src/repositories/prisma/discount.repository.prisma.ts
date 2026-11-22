@@ -2,8 +2,8 @@ import type {
   CreateDiscountInput,
   DiscountListQuery,
   UpdateDiscountInput,
-} from "@getyourboat/shared";
-import { DiscountTarget } from "@getyourboat/shared";
+} from "@ahoy/shared";
+import { DiscountTarget } from "@ahoy/shared";
 import { prisma } from "../../client.js";
 import type { BoatOption, DiscountRepository } from "../discount.repository.js";
 import { toDiscountDTO } from "../discount.repository.js";

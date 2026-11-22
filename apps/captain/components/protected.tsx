@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, type ReactNode } from "react";
-import { AhoyLogo } from "@getyourboat/ui";
+import { AhoyLogo } from "@ahoy/ui";
 import { useAuth } from "./auth-provider";
 import { Spinner } from "./ui";
 

@@ -1,4 +1,4 @@
-import { RentalType } from "@getyourboat/shared";
+import { RentalType } from "@ahoy/shared";
 
 /**
  * BoatPricing.listingModelKey comes from ListingModelOption

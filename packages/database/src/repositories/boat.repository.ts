@@ -10,7 +10,7 @@ import type {
   OnboardingStep,
   ProgressState,
   SerializedBoatDTO,
-} from "@getyourboat/shared";
+} from "@ahoy/shared";
 
 export interface BoatOwnership {
   id: string;
@@ -78,7 +78,7 @@ export interface BoatRepository {
 
   updateEngineType(
     boatId: string,
-    engineType: import("@getyourboat/shared").EngineType | null
+    engineType: import("@ahoy/shared").EngineType | null
   ): Promise<void>;
 
   // Steps
@@ -92,8 +92,8 @@ export interface BoatRepository {
     boatTypeKey: string,
     features: FeatureWrite[],
     meta?: {
-      engineType?: import("@getyourboat/shared").EngineType | null;
-      cabinConfigurations?: import("@getyourboat/shared").CabinConfigurationInput[];
+      engineType?: import("@ahoy/shared").EngineType | null;
+      cabinConfigurations?: import("@ahoy/shared").CabinConfigurationInput[];
     }
   ): Promise<void>;
   upsertFeatureValues(boatId: string, features: FeatureWrite[]): Promise<void>;

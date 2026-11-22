@@ -1,193 +1,141 @@
 import type { Metadata } from 'next'
 import Link from 'next/link'
-import {
-  ArrowRight,
-  CalendarCheck,
-  CreditCard,
-  Percent,
-  ShieldCheck,
-  Sparkles,
-  Wallet,
-} from 'lucide-react'
+import { ArrowRight } from 'lucide-react'
+import { FaqList } from '@/components/pages/Editorial'
+import CashbackCalculator from '@/components/cashback/CashbackCalculator'
 
 export const metadata: Metadata = {
-  title: 'Ahoy Cashback Programı — Her rezervasyonda geri kazanın',
+  title: 'Ahoy Cashback — Her rota bir sonrakini ucuzlatır',
   description:
-    'Onaylı tekne ve deneyim rezervasyonlarınızda Ahoy Cashback ile ilk kiralamada %5, sonrakilerde %15\'e varan bakiye kazanın. Ek ücret yok.',
+    'Ahoy’da ilk onaylı kiralamanda %5, sonraki kiralamalarında %15’e varan cashback. Ek ücret yok, başvuru gerekmez.',
 }
 
 const STEPS = [
+  { title: 'Rezervasyonunu yap.', text: 'Tekneni ya da deneyimini seç, rezervasyon talebini Ahoy üzerinden gönder.' },
   {
-    n: 1,
-    title: 'Rezervasyon yapın',
-    desc: 'Tekne kiralama veya deneyim seçin; ödemeyi Ahoy üzerinden tamamlayın.',
-    Icon: CalendarCheck,
+    title: 'Kiralaman tamamlansın.',
+    text: 'Kaptan talebini onaylayıp ödemen tamamlandığında ve iptal süresi geçtiğinde cashback hesaplanır.',
   },
   {
-    n: 2,
-    title: 'Ödeme onaylansın',
-    desc: 'İşlem güvenli ödeme altyapısıyla tamamlanınca cashback hesaplanır.',
-    Icon: CreditCard,
+    title: 'Bakiyen sıradaki rotanda düşsün.',
+    text: 'Kazandığın tutar Ahoy bakiyene eklenir; bir sonraki uygun rezervasyonunda indirim olarak kullanırsın.',
   },
-  {
-    n: 3,
-    title: 'Cüzdana işlensin',
-    desc: 'Kazanılan tutar Ahoy cüzdanınıza otomatik yansır; ekstra başvuru gerekmez.',
-    Icon: Wallet,
-  },
-  {
-    n: 4,
-    title: 'Sonraki seferde kullanın',
-    desc: 'Bakiyenizi bir sonraki uygun rezervasyonda indirim olarak kullanın.',
-    Icon: Sparkles,
-  },
+]
+
+const TERMS = [
+  { title: 'Ek ücret yok', text: 'Cashback için fazladan bir şey ödemezsin.' },
+  { title: 'Başvuru gerekmez', text: 'Uygun rezervasyonlarda kendiliğinden hesaplanır.' },
+  { title: 'Tamamlananlarda geçerli', text: 'Yalnızca geçerli ve tamamlanmış rezervasyonlar için.' },
+  { title: 'Oranlar değişebilir', text: 'Kampanya dönemine ve iş ortağına göre güncellenebilir.' },
 ]
 
 const FAQ = [
   {
     q: 'Cashback ne zaman tanımlanır?',
-    a: 'Rezervasyon ödemesi başarıyla tamamlandıktan ve iptal süresi geçtikten sonra uygun işlemlerde bakiyenize işlenir.',
+    a: 'Rezervasyonunun ödemesi tamamlandıktan ve iptal süresi geçtikten sonra, uygun rezervasyonlarda bakiyene eklenir.',
   },
   {
     q: 'Her rezervasyonda aynı oran mı geçerli?',
-    a: 'Program kapsamında ilk onaylı kiralamanızda %5; ikinci ve sonraki uygun işlemlerde daha yüksek oranlar uygulanabilir (ör. %15). Güncel koşullar hesabınızda görüntülenir.',
+    a: 'İlk onaylı kiralamanda %5 geçerlidir. İkinci ve sonraki uygun rezervasyonlarında daha yüksek oranlar uygulanabilir; örneğin %15.',
   },
   {
     q: 'İptal veya değişiklikte ne olur?',
-    a: 'İptal veya kısmi iade kuralları iş ortağı ve iptal politikasına göre değişir; cashback yalnızca geçerli ve tamamlanmış işlemler için hesaplanır.',
+    a: 'İptal ve kısmi iade kuralları iş ortağının iptal politikasına göre değişir; cashback yalnızca geçerli ve tamamlanmış rezervasyonlar için hesaplanır.',
+  },
+  {
+    q: 'Bakiyemi nerede kullanırım?',
+    a: 'Bakiyeni bir sonraki uygun tekne ya da deneyim rezervasyonunda indirim olarak kullanırsın.',
   },
 ]
 
 export default function CashbackProgramPage() {
   return (
-    <div className="cb-page">
-      <section className="cb-hero" aria-labelledby="cb-hero-title">
-        <div className="cb-hero-bg" aria-hidden="true" />
-        <div className="cb-hero-inner">
-          <p className="cb-eyebrow">
-            <Sparkles size={14} strokeWidth={2.5} aria-hidden />
-            Ahoy Cashback
-          </p>
-          <h1 id="cb-hero-title" className="cb-title">
-            Her onaylı rezervasyonda geri kazanın
+    <div className="sh-home sh-cb">
+      {/* açılış: başlık + dev oranlar + cümle içinde hesaplama */}
+      <section className="sh-cb-hero" aria-labelledby="cb-title">
+        <div className="sh-container">
+          <p className="sh-cb-kicker">Ahoy Cashback</p>
+          <h1 id="cb-title" className="sh-cb-title">
+            Her rota
+            <span>bir sonrakini ucuzlatır.</span>
           </h1>
-          <p className="cb-lede">
-            Ödemeniz tamamlanınca bakiyenize cashback yansır; bir sonraki tekne veya deneyim rezervasyonunda kullanırsınız.
-            Ek ücret yok — uygun işlemlerde otomatik hesaplanır.
-          </p>
-          <div className="cb-hero-actions">
-            <Link href="/tekne-kiralama" className="cb-btn cb-btn--primary">
-              Tekne ara
-              <ArrowRight size={18} strokeWidth={2.25} aria-hidden />
-            </Link>
-            <Link href="/deneyimler" className="cb-btn cb-btn--ghost">
-              Deneyimlere göz at
-            </Link>
-          </div>
-        </div>
-      </section>
 
-      <section className="cb-shell" aria-labelledby="cb-tiers-title">
-        <h2 id="cb-tiers-title" className="cb-section-title">
-          Oranlar nasıl işler?
-        </h2>
-        <p className="cb-section-lede">
-          Program, deniz ekosistemindeki ilk ve tekrarlayan rezervasyonlarınızı ödüllendirir. Oranlar kampanya ve iş ortağına göre güncellenebilir.
-        </p>
-        <div className="cb-tier-grid">
-          <article className="cb-tier-card">
-            <div className="cb-tier-badge">
-              <Percent size={18} strokeWidth={2.2} aria-hidden />
-              İlk uygun kiralama
+          <div className="sh-cb-stage">
+            <div className="sh-cb-rates">
+              <p className="sh-cb-rate sh-cb-rate--first">
+                <span className="sh-cb-num">%5</span>
+                <span className="sh-cb-cap">ilk kiralamanda</span>
+              </p>
+              <svg className="sh-cb-arrow" viewBox="0 0 96 16" aria-hidden="true">
+                <path d="M0 8h88M81 1.5 88 8l-7 6.5" />
+              </svg>
+              <p className="sh-cb-rate sh-cb-rate--next">
+                <span className="sh-cb-num">
+                  %15<small>’e varan</small>
+                </span>
+                <span className="sh-cb-cap">sonraki kiralamalarında</span>
+              </p>
             </div>
-            <p className="cb-tier-pct">%5</p>
-            <p className="cb-tier-desc">
-              Ahoy üzerinden tamamladığınız ilk onaylı rezervasyonda cashback oranı.
-            </p>
-          </article>
-          <article className="cb-tier-card cb-tier-card--accent">
-            <div className="cb-tier-badge cb-tier-badge--light">
-              <Sparkles size={18} strokeWidth={2.2} aria-hidden />
-              İkinci ve sonrası
+            <div className="sh-cb-aside">
+              <p>
+                Ahoy’da tamamlanan her kiralamada tutarın bir kısmı bakiyene döner; sıradaki rotanda indirim olarak
+                kullanırsın. Ek ücret yok, başvuru gerekmez.
+              </p>
+              <Link href="/tekne-kiralama" className="sh-btn sh-btn--navy">
+                Tekne ara <ArrowRight size={18} strokeWidth={1.9} aria-hidden="true" />
+              </Link>
             </div>
-            <p className="cb-tier-pct">%15</p>
-            <p className="cb-tier-desc">
-              Aynı hesapla devam eden uygun kiralamalarda artan geri kazanım — sadakat için tasarlandı.
-            </p>
-          </article>
+          </div>
+
+          <CashbackCalculator />
         </div>
       </section>
 
-      <section className="cb-shell cb-steps-wrap" aria-labelledby="cb-steps-title">
-        <h2 id="cb-steps-title" className="cb-section-title">
-          Nasıl çalışır?
-        </h2>
-        <ol className="cb-steps">
-          {STEPS.map(({ n, title, desc, Icon }) => (
-            <li key={n} className="cb-step">
-              <div className="cb-step-ico" aria-hidden>
-                <Icon size={22} strokeWidth={1.85} />
-              </div>
-              <div className="cb-step-body">
-                <span className="cb-step-num">{n}</span>
-                <h3 className="cb-step-title">{title}</h3>
-                <p className="cb-step-desc">{desc}</p>
-              </div>
-            </li>
-          ))}
-        </ol>
-      </section>
+      {/* nasıl işler + koşullar + sorular */}
+      <section className="sh-sect sh-sect--white sh-cb-sect" aria-labelledby="cb-how">
+        <div className="sh-container">
+          <h2 id="cb-how" className="sh-cb-label">
+            Nasıl işler?
+          </h2>
+          <ol className="sh-cb-steps">
+            {STEPS.map(s => (
+              <li key={s.title}>
+                <p className="sh-cb-step">{s.title}</p>
+                <p className="sh-cb-step-note">{s.text}</p>
+              </li>
+            ))}
+          </ol>
 
-      <section className="cb-shell">
-        <div className="cb-trust-grid">
-          <div className="cb-trust-card">
-            <ShieldCheck className="cb-trust-icon" size={28} strokeWidth={1.75} aria-hidden />
-            <h3 className="cb-trust-title">Güvenli ödeme</h3>
-            <p className="cb-trust-text">
-              Ödemeler şifreli altyapı üzerinden işlenir; cashback yalnızca tamamlanmış ve uygun rezervasyonlar için hesaplanır.
-            </p>
-          </div>
-          <div className="cb-trust-card">
-            <Wallet className="cb-trust-icon" size={28} strokeWidth={1.75} aria-hidden />
-            <h3 className="cb-trust-title">Tek cüzdan</h3>
-            <p className="cb-trust-text">
-              Bakiyenizi hesabınızdan takip edin; uygun sonraki rezervasyonlarda kolayca kullanın.
-            </p>
+          <ul className="sh-cb-terms" aria-label="Kısaca koşullar">
+            {TERMS.map(t => (
+              <li key={t.title}>
+                {t.title}
+                <span>{t.text}</span>
+              </li>
+            ))}
+          </ul>
+
+          <div className="sh-cb-faq">
+            <h2>Sorular</h2>
+            <FaqList items={FAQ} />
           </div>
         </div>
       </section>
 
-      <section className="cb-shell cb-faq" aria-labelledby="cb-faq-title">
-        <h2 id="cb-faq-title" className="cb-section-title">
-          Sıkça sorulanlar
-        </h2>
-        <ul className="cb-faq-list">
-          {FAQ.map(item => (
-            <li key={item.q} className="cb-faq-item">
-              <p className="cb-faq-q">{item.q}</p>
-              <p className="cb-faq-a">{item.a}</p>
-            </li>
-          ))}
-        </ul>
-      </section>
-
-      <section className="cb-bottom-cta" aria-label="Rezervasyona başlayın">
-        <div className="cb-bottom-inner">
-          <h2 className="cb-bottom-title">Cashback kazanmaya hazır mısınız?</h2>
-          <p className="cb-bottom-text">
-            Bugün bir rota veya deneyim seçin; onaylı işlemlerde geri kazanım hesabınıza işlensin.
-          </p>
-          <Link href="/tekne-kiralama" className="cb-bottom-btn">
-            Kiralamaya başla
-            <ArrowRight size={18} strokeWidth={2.25} aria-hidden />
+      {/* kapanış */}
+      <section className="sh-sect sh-sect--cream sh-cb-end" aria-label="Rezervasyona başla">
+        <div className="sh-container">
+          <p className="sh-cb-end-sub">Sıradaki rotan seni bekliyor.</p>
+          <Link href="/tekne-kiralama" className="sh-cb-end-link">
+            <span>Tekneleri keşfet</span>
+            <ArrowRight size={52} strokeWidth={1.6} aria-hidden="true" />
           </Link>
+          <p className="sh-cb-legal">
+            Ahoy Cashback oranları ve koşulları kampanya dönemlerine göre değişebilir. Kesin kurallar rezervasyon sırasında ve
+            hesap sözleşmende yer alır.
+          </p>
         </div>
       </section>
-
-      <p className="cb-legal">
-        Ahoy Cashback oranları ve koşulları kampanya dönemlerine göre değişebilir. Kesin kurallar rezervasyon sırasında ve hesap
-        sözleşmenizde yer alır.
-      </p>
     </div>
   )
 }

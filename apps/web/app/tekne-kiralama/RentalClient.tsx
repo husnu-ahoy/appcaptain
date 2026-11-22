@@ -17,7 +17,8 @@ import type { PublicBoatSummary } from '@/lib/api'
 import BoatListCard from '@/components/boats/BoatListCard'
 import { CashbackCard } from '@/components/home/HomeStatic'
 import AhoyGuarantee from '@/components/sh/AhoyGuarantee'
-import { boatTypeLabel, listingModelLabel, lowestPrice } from '@/lib/boatFormat'
+import { boatTypeLabel, formatDayMonth, listingModelLabel, lowestPrice, toISODate } from '@/lib/boatFormat'
+import { parseDate } from '@/lib/bookingPrice'
 
 type Sort = 'recommended' | 'price-asc' | 'price-desc' | 'newest' | 'capacity'
 const SORTS: { value: Sort; label: string }[] = [
@@ -28,7 +29,7 @@ const SORTS: { value: Sort; label: string }[] = [
   { value: 'newest', label: 'Model yılı: En yeni' },
 ]
 
-type Range = [number, number]
+export type Range = [number, number]
 type Crew = 'with' | 'without'
 
 interface Filters {
@@ -57,7 +58,7 @@ interface Bounds {
 const norm = (s: string) => s.toLocaleLowerCase('tr').trim()
 
 /** Değerleri adım katlarına yuvarlayarak kaydırıcı sınırı üretir. */
-function niceBounds(values: number[], step: number): Range {
+export function niceBounds(values: number[], step: number): Range {
   if (values.length === 0) return [0, step]
   const lo = Math.floor(Math.min(...values) / step) * step
   const hi = Math.ceil(Math.max(...values) / step) * step
@@ -72,9 +73,30 @@ interface Props {
   boats: PublicBoatSummary[]
   initialCity: string
   initialType: string
+  /** Kiralama türü (ör. weekly_charter — ana sayfadaki "Mavi Yolculuk" sekmesi) */
+  initialModel: string
+  /** Ana sayfa aramasından gelen check-in / check-out ("2026-11-29") ve en az kabin sayısı */
+  initialStart?: string
+  initialEnd?: string
+  initialCabins?: number
 }
 
-export default function RentalClient({ boats, initialCity, initialType }: Props) {
+interface TripDates {
+  start: Date | null
+  end: Date | null
+}
+
+/** Geçmiş ya da ters sıralı tarihleri yok sayar. */
+function readDates(start?: string, end?: string): TripDates {
+  const s = parseDate(start)
+  const today = new Date()
+  today.setHours(0, 0, 0, 0)
+  if (!s || s < today) return { start: null, end: null }
+  const e = parseDate(end)
+  return { start: s, end: e && e >= s ? e : null }
+}
+
+export default function RentalClient({ boats, initialCity, initialType, initialModel, initialStart, initialEnd, initialCabins = 0 }: Props) {
   const bounds = useMemo<Bounds>(() => {
     const prices = boats.map(b => lowestPrice(b.pricing)?.price).filter((v): v is number => v != null)
     const rawPrice = niceBounds(prices, 10)
@@ -109,7 +131,14 @@ export default function RentalClient({ boats, initialCity, initialType }: Props)
     ...blank,
     city: initialCity,
     types: initialType ? initialType.split(',').filter(Boolean) : [],
+    models: initialModel ? initialModel.split(',').filter(Boolean) : [],
+    cabins: initialCabins,
   }))
+  // Tarihler tekneleri süzmez (liste müsaitlik bilgisi taşımaz); ilan sayfasına taşınır ve orada müsaitlik görülür.
+  const [dates, setDates] = useState<TripDates>(() => readDates(initialStart, initialEnd))
+  const dateQuery = dates.start
+    ? new URLSearchParams({ start: toISODate(dates.start), ...(dates.end ? { end: toISODate(dates.end) } : {}) }).toString()
+    : undefined
   const [sort, setSort] = useState<Sort>('recommended')
   const [drawer, setDrawer] = useState(false)
   const [sortOpen, setSortOpen] = useState(false)
@@ -130,14 +159,18 @@ export default function RentalClient({ boats, initialCity, initialType }: Props)
     return () => document.removeEventListener('mousedown', onDown)
   }, [])
 
-  // Paylaşılabilir URL: lokasyon ve tekne tipleri adres çubuğunda tutulur.
+  // Paylaşılabilir URL: lokasyon, tekne tipleri ve kiralama türleri adres çubuğunda tutulur.
   useEffect(() => {
     const qs = new URLSearchParams()
     if (f.city) qs.set('city', f.city)
     if (f.types.length) qs.set('type', f.types.join(','))
+    if (f.models.length) qs.set('model', f.models.join(','))
+    if (f.cabins > 0) qs.set('cabins', String(f.cabins))
+    if (dates.start) qs.set('start', toISODate(dates.start))
+    if (dates.end) qs.set('end', toISODate(dates.end))
     const next = `${window.location.pathname}${qs.toString() ? `?${qs}` : ''}`
     window.history.replaceState(null, '', next)
-  }, [f.city, f.types])
+  }, [f.city, f.types, f.models, f.cabins, dates])
 
   useEffect(() => {
     document.body.style.overflow = drawer ? 'hidden' : ''
@@ -213,6 +246,11 @@ export default function RentalClient({ boats, initialCity, initialType }: Props)
     new Intl.NumberFormat('tr-TR', { style: 'currency', currency: bounds.currency, maximumFractionDigits: 0 }).format(n)
 
   const chips = [
+    dates.start && {
+      key: 'dates',
+      label: dates.end ? `${formatDayMonth(dates.start)} – ${formatDayMonth(dates.end)}` : `${formatDayMonth(dates.start)} itibarıyla`,
+      clear: () => setDates({ start: null, end: null }),
+    },
     f.city && { key: 'city', label: f.city, clear: () => set('city', '') },
     ...f.types.map(t => ({ key: `t-${t}`, label: types.find(([k]) => k === t)?.[1].label ?? t, clear: () => toggleIn('types', t) })),
     ...f.models.map(m => ({ key: `m-${m}`, label: listingModelLabel(m), clear: () => toggleIn('models', m) })),
@@ -227,7 +265,10 @@ export default function RentalClient({ boats, initialCity, initialType }: Props)
     !isFull(f.power, bounds.power) && { key: 'pow', label: `${f.power[0]}–${f.power[1]} hp`, clear: () => set('power', bounds.power) },
   ].filter(Boolean) as { key: string; label: string; clear: () => void }[]
 
-  const reset = () => setF(blank)
+  const reset = () => {
+    setF(blank)
+    setDates({ start: null, end: null })
+  }
   const title = f.city ? `${f.city} tekne kiralama` : 'Tekne kiralama'
 
   const panel = (
@@ -293,7 +334,11 @@ export default function RentalClient({ boats, initialCity, initialType }: Props)
                 <h2 className="sh-rl-count" id="rl-count">
                   {filtered.length > 0 ? `${filtered.length} tekne mevcut` : 'Uygun tekne yok'}
                 </h2>
-                <p className="sh-rl-note">Fiyatlar seçilen kiralama türünün başlangıç fiyatıdır.</p>
+                <p className="sh-rl-note">
+                  {dates.start
+                    ? 'Seçtiğin tarihler ilan sayfasında hazır gelir; müsaitliği orada görürsün.'
+                    : 'Fiyatlar seçilen kiralama türünün başlangıç fiyatıdır.'}
+                </p>
               </div>
               <div className="sh-rl-actions">
                 <button type="button" className="sh-pill-btn sh-rl-filterbtn" onClick={() => setDrawer(true)}>
@@ -352,7 +397,7 @@ export default function RentalClient({ boats, initialCity, initialType }: Props)
             {filtered.length > 0 ? (
               <div className="sh-bgrid sh-bgrid--rl">
                 {filtered.map(b => (
-                  <BoatListCard key={b.id} boat={b} />
+                  <BoatListCard key={b.id} boat={b} query={dateQuery} />
                 ))}
               </div>
             ) : (
@@ -535,7 +580,8 @@ function FilterPanel({ f, bounds, set, toggleIn, cities, types, modelOptions, to
   )
 }
 
-function CheckRow({ on, label, count, radio, onClick }: { on: boolean; label: string; count?: number; radio?: boolean; onClick: () => void }) {
+/** Deneyim listesi de kullanır. */
+export function CheckRow({ on, label, count, radio, onClick }: { on: boolean; label: string; count?: number; radio?: boolean; onClick: () => void }) {
   return (
     <button type="button" className={`sh-check${on ? ' is-on' : ''}${radio ? ' sh-check--radio' : ''}`} aria-pressed={on} onClick={onClick}>
       <span className="sh-check-box">{on && (radio ? <span className="sh-check-dot" /> : <Check size={14} strokeWidth={3} />)}</span>
@@ -545,7 +591,8 @@ function CheckRow({ on, label, count, radio, onClick }: { on: boolean; label: st
   )
 }
 
-function Toggle({ on, onChange, label, hint }: { on: boolean; onChange: (v: boolean) => void; label: string; hint: string }) {
+/** Deneyim listesi de kullanır. */
+export function Toggle({ on, onChange, label, hint }: { on: boolean; onChange: (v: boolean) => void; label: string; hint: string }) {
   return (
     <div className="sh-flt-toggle">
       <span>
@@ -557,7 +604,8 @@ function Toggle({ on, onChange, label, hint }: { on: boolean; onChange: (v: bool
   )
 }
 
-function Counter({ label, value, max, onChange }: { label: string; value: number; max: number; onChange: (v: number) => void }) {
+/** Deneyim listesi de kullanır. */
+export function Counter({ label, value, max, onChange }: { label: string; value: number; max: number; onChange: (v: number) => void }) {
   return (
     <div className="sh-flt-count">
       <span>{label}</span>
@@ -574,7 +622,8 @@ function Counter({ label, value, max, onChange }: { label: string; value: number
   )
 }
 
-function RangeFilter({
+/** Deneyim listesi de kullanır. */
+export function RangeFilter({
   bounds,
   step,
   value,

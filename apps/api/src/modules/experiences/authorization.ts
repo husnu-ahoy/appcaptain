@@ -1,5 +1,5 @@
 import type { AuthUser } from "../../plugins/captain-auth.js";
-import { experienceRepository } from "@getyourboat/database";
+import { experienceRepository } from "@ahoy/database";
 import { forbidden, notFound } from "../../lib/errors.js";
 
 export async function loadOwnedExperience(id: string, user: AuthUser) {

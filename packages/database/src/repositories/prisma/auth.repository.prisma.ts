@@ -1,4 +1,4 @@
-import type { ProfileRole } from "@getyourboat/shared";
+import type { ProfileRole } from "@ahoy/shared";
 import { prisma } from "../../client.js";
 import type { AuthRepository, CaptainAuthProfile } from "../auth.repository.js";
 

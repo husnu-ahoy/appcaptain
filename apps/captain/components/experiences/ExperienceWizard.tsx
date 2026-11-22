@@ -1,7 +1,7 @@
 "use client";
 
-import { faPaperPlane } from "@getyourboat/ui";
-import { ExperienceStatus, ExperienceStep } from "@getyourboat/shared";
+import { faPaperPlane } from "@ahoy/ui";
+import { ExperienceStatus, ExperienceStep } from "@ahoy/shared";
 import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { api, ApiError } from "../../lib/api";
@@ -10,7 +10,7 @@ import {
   EXPERIENCE_STEP_ORDER,
   experienceStepIndex,
 } from "../../lib/experience";
-import type { ExperienceDTO } from "@getyourboat/shared";
+import type { ExperienceDTO } from "@ahoy/shared";
 import { Alert, Spinner } from "../ui";
 import { EXPERIENCE_STEP_COMPONENTS } from "./steps";
 import { FocusTopBar, TopBarButton, WizardChromeProvider } from "../wizard/focus";

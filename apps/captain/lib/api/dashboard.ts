@@ -1,5 +1,5 @@
 import { useQuery } from "@tanstack/react-query";
-import type { AnnouncementDTO, DashboardStatsDTO } from "@getyourboat/shared";
+import type { AnnouncementDTO, DashboardStatsDTO } from "@ahoy/shared";
 import {
   announcementsMock,
   dashboardStatsMock,

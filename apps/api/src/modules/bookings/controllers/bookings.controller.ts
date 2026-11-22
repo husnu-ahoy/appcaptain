@@ -6,7 +6,7 @@ import {
   approveBookingSchema,
   createBookingSchema,
   rejectBookingSchema,
-} from "@getyourboat/shared";
+} from "@ahoy/shared";
 import { parseDetailed } from "../../../lib/validate.js";
 import * as service from "../services/booking.service.js";
 

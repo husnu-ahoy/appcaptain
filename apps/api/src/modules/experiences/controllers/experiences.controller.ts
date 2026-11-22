@@ -7,7 +7,7 @@ import {
   experienceStatusToggleSchema,
   experienceCustomerInfoFieldSchema,
   experienceSeasonalPricingRuleSchema,
-} from "@getyourboat/shared";
+} from "@ahoy/shared";
 import { badRequest } from "../../../lib/errors.js";
 import { parseDetailed } from "../../../lib/validate.js";
 import { loadOwnedExperience } from "../authorization.js";

@@ -2,8 +2,8 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import { io, type Socket } from "socket.io-client";
-import { SOCKET_EVENTS } from "@getyourboat/shared";
-import type { MessageDTO } from "@getyourboat/shared";
+import { SOCKET_EVENTS } from "@ahoy/shared";
+import type { MessageDTO } from "@ahoy/shared";
 import { getAccessToken } from "../auth/token-store";
 
 const BASE = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:4000";

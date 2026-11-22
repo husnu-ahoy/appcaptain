@@ -1,30 +1,30 @@
 import type {
   BookingListQuery,
   CreateBookingInput,
-} from "@getyourboat/shared";
-import { PLATFORM_COMMISSION_RATE } from "@getyourboat/shared";
+} from "@ahoy/shared";
+import { BoatStatus, PLATFORM_COMMISSION_RATE } from "@ahoy/shared";
 import {
   bookingPaymentRepository,
   bookingRepository,
   guestConversationRepository,
-} from "@getyourboat/database";
+} from "@ahoy/database";
 import { conflict, forbidden, notFound } from "../../../lib/errors.js";
 
-export async function createBooking(input: CreateBookingInput) {
-  const captainId = await bookingRepository.getBoatCaptainId(input.boatId);
-  if (!captainId) throw notFound("Tekne bulunamadı");
+const fmtDay = (d: Date) => d.toISOString().slice(0, 10);
 
-  const start = new Date(input.startDate);
-  const end = new Date(input.endDate);
-  const clash = await bookingRepository.findConflict(input.boatId, start, end);
-  if (clash) {
-    const fmt = (d: Date) => d.toISOString().slice(0, 10);
+export async function createBooking(input: CreateBookingInput) {
+  // Only published listings take requests; drafts, suspended and rejected boats look missing.
+  const boat = await bookingRepository.getBoatForBooking(input.boatId);
+  if (!boat || boat.status !== BoatStatus.ACTIVE) throw notFound("Tekne bulunamadı");
+  const captainId = boat.ownerId;
+
+  const result = await bookingRepository.createIfAvailable(input, captainId);
+  if (!result.ok) {
     throw conflict(
-      `Bu tarihler için zaten bir rezervasyon var (${fmt(clash.startDate)} → ${fmt(clash.endDate)}).`
+      `Bu tarihler için zaten bir rezervasyon var (${fmtDay(result.conflict.startDate)} → ${fmtDay(result.conflict.endDate)}).`
     );
   }
-
-  const booking = await bookingRepository.create(input, captainId);
+  const booking = result.booking;
 
   // Best-effort: open a guest conversation seeded from the request note so the
   // captain can reply. A messaging failure must not fail the booking itself.
@@ -73,7 +73,17 @@ export async function approveBooking(
   totalPrice?: number | null
 ) {
   await loadOwnedBooking(id, captainId);
-  const booking = await bookingRepository.approve(id, totalPrice);
+  const result = await bookingRepository.approveIfPending(id, totalPrice);
+  if (!result.ok) {
+    if (result.reason === "not_found") throw notFound("Rezervasyon bulunamadı");
+    if (result.reason === "not_pending") {
+      throw conflict("Yalnızca bekleyen talepler onaylanabilir");
+    }
+    throw conflict(
+      `Bu tarihlerde onaylanmış başka bir rezervasyon var (${fmtDay(result.conflict.startDate)} → ${fmtDay(result.conflict.endDate)}).`
+    );
+  }
+  const booking = result.booking;
 
   // Best-effort: open a PENDING payment record (gross - 15% commission) so the
   // captain sees expected earnings. Skipped when no amount is known yet.
@@ -106,5 +116,7 @@ export async function rejectBooking(
   rejectionNote?: string | null
 ) {
   await loadOwnedBooking(id, captainId);
-  return bookingRepository.reject(id, rejectionNote);
+  const booking = await bookingRepository.rejectIfOpen(id, rejectionNote);
+  if (!booking) throw conflict("Bu rezervasyon artık değiştirilemez");
+  return booking;
 }

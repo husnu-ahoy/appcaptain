@@ -1,4 +1,4 @@
-import type { BoatBrandCategory, BrandModelRequestStatus } from "@getyourboat/shared";
+import type { BoatBrandCategory, BrandModelRequestStatus } from "@ahoy/shared";
 import { prisma } from "../../client.js";
 import type { BoatBrandRepository } from "../boat-brand.repository.js";
 import {

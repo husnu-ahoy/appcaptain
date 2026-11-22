@@ -9,7 +9,7 @@ import {
   getValidationFieldLabel,
   type FeatureSubTabId,
   type FieldErrorsMap,
-} from "@getyourboat/shared";
+} from "@ahoy/shared";
 import { ApiError } from "./api";
 import type { SerializedBoat } from "./types";
 

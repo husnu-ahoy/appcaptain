@@ -29,7 +29,7 @@ import {
   faWallet,
   faXmark,
   type IconDefinition,
-} from "@getyourboat/ui";
+} from "@ahoy/ui";
 import { api } from "../lib/api";
 
 const LOCALES = [
@@ -178,7 +178,7 @@ export function AdminTopBar({ onOpenMenu }: { onOpenMenu?: () => void }) {
                   İndirim yönetimi
                 </Link>
                 <a
-                  href="mailto:destek@getyourboat.com?subject=Ahoy%20Admin%20Destek"
+                  href="mailto:destek@ahoyboats.com?subject=Ahoy%20Admin%20Destek"
                   onClick={closeAll}
                   className="block border-t border-gray-100 px-3 py-2 text-body-sm text-brand-600 hover:bg-gray-50"
                 >

@@ -1,7 +1,7 @@
 "use client";
 
-import { AuthLayout, Button } from "@getyourboat/ui";
-import { captainLoginSchema } from "@getyourboat/shared";
+import { AuthLayout, Button } from "@ahoy/ui";
+import { captainLoginSchema, safeRedirectPath } from "@ahoy/shared";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useState } from "react";
@@ -22,9 +22,8 @@ export default function LoginPage() {
   useEffect(() => {
     const params = new URLSearchParams(window.location.search);
     setSessionExpired(params.get("expired") === "1");
-    // Only honor internal, absolute-path redirects to avoid open-redirects.
-    const target = params.get("redirect");
-    setRedirectTo(target && target.startsWith("/") && !target.startsWith("//") ? target : null);
+    // Only honor same-origin paths; `/\evil.example` style values are rejected (SEC-19).
+    setRedirectTo(safeRedirectPath(params.get("redirect"), window.location.origin));
   }, []);
 
   const goAfterAuth = useCallback(async () => {

@@ -2,11 +2,11 @@ import type {
   BookingDTO,
   CreateBookingInput,
   ExperienceDTO,
-  ExperienceListItemDTO,
   GuestConversationDTO,
   GuestMessageDTO,
+  PublicExperienceListItemDTO,
   SerializedBoatDTO,
-} from "@getyourboat/shared";
+} from "@ahoy/shared";
 import { supabase } from "@/lib/supabase";
 
 const BASE = process.env.NEXT_PUBLIC_API_URL ?? "https://appcaptain-api.vercel.app/api/v1";
@@ -100,7 +100,7 @@ export async function fetchBoat(id: string): Promise<SerializedBoatDTO | null> {
 
 export async function fetchExperiences(
   params?: PublicExperienceListParams
-): Promise<Paginated<ExperienceListItemDTO>> {
+): Promise<Paginated<PublicExperienceListItemDTO>> {
   const qs = toQueryString(params as Record<string, string | number | undefined> | undefined);
   return safeGet(`/public/experiences${qs}`, 60, { items: [], total: 0 });
 }

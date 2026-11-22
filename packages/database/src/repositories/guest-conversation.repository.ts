@@ -2,7 +2,7 @@ import type {
   GuestConversationDTO,
   GuestMessageDTO,
   GuestSenderType,
-} from "@getyourboat/shared";
+} from "@ahoy/shared";
 
 export interface CreateGuestMessageData {
   conversationId: string;

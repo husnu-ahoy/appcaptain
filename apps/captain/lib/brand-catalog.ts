@@ -1,4 +1,4 @@
-import { boatTypeToBrandCategory, type BoatBrandDTO, type BoatModelDTO } from "@getyourboat/shared";
+import { boatTypeToBrandCategory, type BoatBrandDTO, type BoatModelDTO } from "@ahoy/shared";
 import { api } from "./api";
 
 let allBrandsPromise: Promise<BoatBrandDTO[]> | null = null;

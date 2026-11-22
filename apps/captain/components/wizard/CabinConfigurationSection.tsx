@@ -7,8 +7,8 @@ import {
   WcType,
   type CabinConfigurationDTO,
   type CabinConfigurationInput,
-} from "@getyourboat/shared";
-import { Button, Modal, cn } from "@getyourboat/ui";
+} from "@ahoy/shared";
+import { Button, Modal, cn } from "@ahoy/ui";
 import { useState } from "react";
 import { Field, Select } from "../ui";
 import { SectionTitle, TileCheck, tileClass } from "./focus";

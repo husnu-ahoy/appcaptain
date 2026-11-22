@@ -7,8 +7,8 @@ import {
   type CreateBlockInput,
   type SetPriceOverrideInput,
   type TimeSlot,
-} from "@getyourboat/shared";
-import { calendarRepository } from "@getyourboat/database";
+} from "@ahoy/shared";
+import { calendarRepository } from "@ahoy/database";
 import { badRequest, conflict, forbidden, notFound } from "../../../lib/errors.js";
 
 const toDateStr = (d: Date) => d.toISOString().slice(0, 10);

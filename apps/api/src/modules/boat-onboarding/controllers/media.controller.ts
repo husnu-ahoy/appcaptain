@@ -6,7 +6,7 @@ import {
   registerPhotoSchema,
   reorderPhotosSchema,
   setCoverSchema,
-} from "@getyourboat/shared";
+} from "@ahoy/shared";
 import { parseDetailed } from "../../../lib/validate.js";
 import { loadOwnedBoat } from "../authorization.js";
 import * as service from "../services/onboarding.service.js";

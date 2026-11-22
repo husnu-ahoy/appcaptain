@@ -11,7 +11,7 @@ import {
   type OnboardingStep,
   type ProgressState,
   type SerializedBoatDTO,
-} from "@getyourboat/shared";
+} from "@ahoy/shared";
 import { prisma } from "../../client.js";
 import type {
   AmenityWrite,
@@ -118,7 +118,7 @@ function serialize(boat: FullBoat): SerializedBoatDTO {
     status: boat.status,
     approvalType: boat.approvalType,
     boatType: boat.boatType,
-    engineType: boat.engineType as import("@getyourboat/shared").EngineType | null,
+    engineType: boat.engineType as import("@ahoy/shared").EngineType | null,
     title: boat.title,
     description: boat.description,
     rulesText: boat.rulesText,
@@ -258,7 +258,7 @@ export class PrismaBoatRepository implements BoatRepository {
 
   async updateEngineType(
     boatId: string,
-    engineType: import("@getyourboat/shared").EngineType | null
+    engineType: import("@ahoy/shared").EngineType | null
   ): Promise<void> {
     await prisma.boat.update({
       where: { id: boatId },
@@ -298,8 +298,8 @@ export class PrismaBoatRepository implements BoatRepository {
     boatTypeKey: string,
     features: FeatureWrite[],
     meta?: {
-      engineType?: import("@getyourboat/shared").EngineType | null;
-      cabinConfigurations?: import("@getyourboat/shared").CabinConfigurationInput[];
+      engineType?: import("@ahoy/shared").EngineType | null;
+      cabinConfigurations?: import("@ahoy/shared").CabinConfigurationInput[];
     }
   ): Promise<void> {
     await prisma.boat.update({

@@ -1,0 +1,54 @@
+# Pull-request and main-branch checks (docs/deployment-security.md#ci).
+# Nothing here deploys or touches a real database: tests use an in-process
+# Postgres (PGlite) and a closed localhost port for DATABASE_URL.
+name: CI
+
+on:
+  pull_request:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      DATABASE_URL: postgresql://test:test@127.0.0.1:9/test
+      DIRECT_URL: postgresql://test:test@127.0.0.1:9/test
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4 # version comes from package.json "packageManager"
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Generate Prisma client
+        run: pnpm --filter @ahoy/database db:generate
+      - name: Typecheck
+        run: pnpm --filter "./packages/*" --filter @ahoy/api --filter @ahoy/web --filter @ahoy/captain --filter @ahoy/admin typecheck
+      - name: Unit, authorization and database tests
+        run: pnpm test
+      - name: Dependency audit (fails on critical)
+        run: pnpm audit --prod --audit-level=critical
+        # Admin (next 15.5.19) and studio (sanity) still carry critical advisories; flip
+        # this to blocking once docs/backend-roadmap.md B-9 is done.
+        continue-on-error: true
+
+  secret-scan:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

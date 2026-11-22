@@ -1,5 +1,5 @@
 import type { FastifyInstance } from "fastify";
-import { prisma } from "@getyourboat/database";
+import { prisma } from "@ahoy/database";
 
 export async function adminDashboardRoutes(app: FastifyInstance) {
   app.get("/dashboard", { onRequest: [app.requireAdminAuth] }, async () => {

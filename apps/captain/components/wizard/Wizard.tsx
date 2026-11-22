@@ -1,6 +1,6 @@
 "use client";
 
-import { Button, FontAwesomeIcon, faPaperPlane } from "@getyourboat/ui";
+import { Button, FontAwesomeIcon, faPaperPlane } from "@ahoy/ui";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { api, ApiError } from "../../lib/api";

@@ -10,7 +10,7 @@ import {
   Field,
   Input,
   Select,
-} from "@getyourboat/ui";
+} from "@ahoy/ui";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";

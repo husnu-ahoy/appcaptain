@@ -1,7 +1,7 @@
 "use client";
 
-import { AuthLayout, Button } from "@getyourboat/ui";
-import { signupFormSchema } from "@getyourboat/shared";
+import { AuthLayout, Button } from "@ahoy/ui";
+import { signupFormSchema } from "@ahoy/shared";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { useAuth } from "../../components/auth-provider";

@@ -1,5 +1,5 @@
 import type { FastifyInstance } from "fastify";
-import { onboardingLookupRepository as lookup } from "@getyourboat/database";
+import { onboardingLookupRepository as lookup } from "@ahoy/database";
 
 /**
  * Read-only onboarding configuration, served from the seeded lookup tables via

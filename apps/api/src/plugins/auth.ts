@@ -1,7 +1,7 @@
 import fp from "fastify-plugin";
 import fastifyJwt from "@fastify/jwt";
 import type { FastifyReply, FastifyRequest } from "fastify";
-import type { UserRole } from "@getyourboat/shared";
+import type { UserRole } from "@ahoy/shared";
 import { env } from "../config/env.js";
 
 declare module "fastify" {
@@ -17,7 +17,7 @@ declare module "@fastify/jwt" {
   interface FastifyJWT {
     payload: {
       sub: string;
-      role: import("@getyourboat/shared").ProfileRole | import("@getyourboat/shared").UserRole;
+      role: import("@ahoy/shared").ProfileRole | import("@ahoy/shared").UserRole;
       email?: string;
     };
     user: FastifyJWT["payload"];

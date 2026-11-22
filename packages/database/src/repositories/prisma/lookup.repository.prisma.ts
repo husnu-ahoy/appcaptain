@@ -7,8 +7,8 @@ import type {
   OnboardingConfigDTO,
   OnboardingFieldDTO,
   ResolvedOnboardingConfigDTO,
-} from "@getyourboat/shared";
-import { resolveOnboardingConfig } from "@getyourboat/shared";
+} from "@ahoy/shared";
+import { resolveOnboardingConfig } from "@ahoy/shared";
 import { prisma } from "../../client.js";
 import type {
   FieldFilter,
