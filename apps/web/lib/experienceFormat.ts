@@ -175,8 +175,10 @@ export interface ExperienceCard {
   title: string
   shortDescription: string
   category: ExperienceCategory | null
-  /** Ana + ikincil kategoriler; tür sekmeleri bunlara göre süzer. */
+  /** Ana + ikincil kategoriler; tür çipleri bunlara göre süzer. */
   categories: ExperienceCategory[]
+  /** Tur / aktivite…: ana kategorisi "Diğer" olan deneyimin ana başlığını belirler. */
+  productType: ExperienceProductType | null
   photo: string | null
   durationMinutes: number
   maxParticipants: number
@@ -200,6 +202,7 @@ export function cardFromDetail(e: ExperienceDTO): ExperienceCard {
     shortDescription: e.shortDescription,
     category: e.category,
     categories: uniq([e.category, ...e.secondaryCategories]),
+    productType: e.productType ?? null,
     photo: e.coverPhotoUrl || e.photoUrls[0] || null,
     durationMinutes: e.durationMinutes,
     maxParticipants: e.maxParticipants,
@@ -223,6 +226,7 @@ export function cardFromListItem(e: PublicExperienceListItemDTO): ExperienceCard
     shortDescription: e.shortDescription,
     category: e.category,
     categories: uniq([e.category, ...(e.secondaryCategories ?? [])]),
+    productType: e.productType ?? null,
     photo: e.coverPhotoUrl || null,
     durationMinutes: e.durationMinutes,
     maxParticipants: e.maxParticipants,

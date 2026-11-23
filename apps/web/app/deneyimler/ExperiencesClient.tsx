@@ -4,29 +4,20 @@ import Image from 'next/image'
 import Link from 'next/link'
 import { useEffect, useMemo, useRef, useState, type KeyboardEvent } from 'react'
 import { createPortal } from 'react-dom'
-import {
-  Anchor,
-  ArrowDownWideNarrow,
-  ArrowRight,
-  ArrowUpRight,
-  CalendarDays,
-  Check,
-  ChevronLeft,
-  ChevronRight,
-  Info,
-  RotateCcw,
-  Search,
-  Send,
-  SlidersHorizontal,
-  Sparkles,
-  X,
-} from 'lucide-react'
+import { ArrowUpRight, Check, ChevronDown, ChevronLeft, ChevronRight, Info, RotateCcw, Search, SlidersHorizontal, X } from 'lucide-react'
 import ExperienceListCard from '@/components/experience/ExperienceListCard'
-import SeaEdge from '@/components/experience/SeaEdge'
-import { typeIcon } from '@/components/experience/typeIcons'
 import { CAPTAIN_APP_URL } from '@/lib/siteLinks'
-import { ALL_EXPERIENCES, EXPERIENCE_TYPES, typeBySlug, type ExperienceType } from '@/lib/content/experienceTypes'
-import { categoryLabel, money, priceUnitLabel, type ExperienceCard } from '@/lib/experienceFormat'
+import {
+  ALL_EXPERIENCES,
+  EXPERIENCE_GROUPS,
+  EXPERIENCE_TYPES,
+  groupBySlug,
+  groupOf,
+  groupOfType,
+  typeBySlug,
+  type ExperienceType,
+} from '@/lib/content/experienceTypes'
+import { categoryLabel, type ExperienceCard } from '@/lib/experienceFormat'
 import { CheckRow, Counter, RangeFilter, Toggle, niceBounds, type Range } from '../tekne-kiralama/RentalClient'
 
 type Sort = 'recommended' | 'price-asc' | 'price-desc' | 'duration'
@@ -53,45 +44,44 @@ interface Filters {
   guests: number
 }
 
-interface Tab {
-  slug: string
-  label: string
-  image: string
-  word?: string
-  count: number
-}
+/** Sayfanın dört ana başlığı (fotoğraflı kartlar): Tüm deneyimler + gruplar. */
+const HEADINGS: { slug: string; label: string; image: string }[] = [
+  { slug: ALL_EXPERIENCES.slug, label: ALL_EXPERIENCES.label, image: ALL_EXPERIENCES.image },
+  ...EXPERIENCE_GROUPS.map(g => ({ slug: g.slug, label: g.label, image: g.image })),
+]
 
-/** Manşetteki kelimenin değişme aralığı (ms). */
-const WORD_EVERY = 2600
+/**
+ * "Tüm deneyimler" altındaki tür çipleri, grup sırasıyla. Tek türlü grup
+ * (Özel tekne) zaten bir ana başlık olduğu için ayrıca çip olmaz.
+ */
+const ALL_CHIP_TYPES: ExperienceType[] = [
+  ...EXPERIENCE_GROUPS.filter(g => g.types.length > 1).flatMap(g => g.types),
+  ...EXPERIENCE_TYPES.filter(t => !groupOfType(t.slug)).map(t => t.slug),
+]
+  .map(slug => typeBySlug(slug))
+  .filter((t): t is ExperienceType => !!t)
 
 const norm = (s: string) => s.toLocaleLowerCase('tr').trim()
 const priceStep = (r: Range) => (r[1] - r[0] <= 2000 ? 50 : r[1] - r[0] <= 10000 ? 100 : 500)
 const isFull = (r: Range, b: Range) => r[0] <= b[0] && r[1] >= b[1]
 const inType = (e: ExperienceCard, t: ExperienceType | null) => !t || e.categories.some(c => t.categories.includes(c))
 
-/** "gün batımı, koy turu ve şnorkel" */
-const joinWords = (list: string[]) => (list.length < 2 ? list.join('') : `${list.slice(0, -1).join(', ')} ve ${list[list.length - 1]}`)
-
-/** Akış bugünkü sürece göre: deneyim talebi WhatsApp destek hattına gider, gönderirken ödeme alınmaz. */
-const HOW = [
-  { icon: Search, title: 'Deneyimini seç', text: 'Türlere göz at; süreye, fiyata ve ücretsiz iptale göre süz.' },
-  { icon: CalendarDays, title: 'Gününü ve kişi sayını belirle', text: 'Tahmini tutarı ve ücretsiz iptalin son gününü hemen gör.' },
-  { icon: Send, title: 'Talebini gönder', text: 'Talebin hazır bir mesajla WhatsApp destek hattımıza gider; gönderirken ödeme yapmazsın.' },
-]
-
 interface Props {
   experiences: ExperienceCard[]
-  /** ?tur= ile gelen deneyim türü (yoksa tümü) */
+  /** ?tur= ile gelen ana başlık (yoksa tüm deneyimler) */
+  initialGroup: string | null
+  /** ?tur= eski bir tür bağlantısıysa, başlığın altında seçili çip */
   initialType: string | null
   /** ?q= ya da ana sayfa aramasından gelen ?city= */
   initialQuery: string
 }
 
 /**
- * Deneyimler ana sayfası: üstte arama, ardından kart görünümlü tür sekmeleri
- * (günlük turlar, gün batımı, su sporları…) ve seçilen türün deneyim listesi.
+ * Deneyimler sayfası (GetYourGuide liste düzeni): başlık ve arama, dört ana
+ * başlık (Tüm deneyimler · Özel tekne · Geziler · Aktiviteler), tür ve filtre
+ * çipleri, sonuç sayısı ve kart ızgarası.
  */
-export default function ExperiencesClient({ experiences, initialType, initialQuery }: Props) {
+export default function ExperiencesClient({ experiences, initialGroup, initialType, initialQuery }: Props) {
   const bounds = useMemo(() => {
     const prices = experiences.map(e => e.basePrice).filter(p => p > 0)
     const raw = niceBounds(prices, 10)
@@ -103,6 +93,7 @@ export default function ExperiencesClient({ experiences, initialType, initialQue
   }, [experiences])
 
   const blank = useMemo<Filters>(() => ({ duration: 'all', price: bounds.price, freeCancel: false, pickup: false, guests: 0 }), [bounds])
+  const [groupSlug, setGroupSlug] = useState<string | null>(groupBySlug(initialGroup)?.slug ?? null)
   const [typeSlug, setTypeSlug] = useState<string | null>(typeBySlug(initialType)?.slug ?? null)
   const [q, setQ] = useState(initialQuery)
   const [f, setF] = useState<Filters>(blank)
@@ -111,45 +102,23 @@ export default function ExperiencesClient({ experiences, initialType, initialQue
   const [modal, setModal] = useState(false)
   const [edges, setEdges] = useState({ left: false, right: false })
   const sortRef = useRef<HTMLDivElement>(null)
-  const stripRef = useRef<HTMLDivElement>(null)
-  const typesRef = useRef<HTMLElement>(null)
-  const resultsRef = useRef<HTMLElement>(null)
+  const tabsRef = useRef<HTMLDivElement>(null)
+  const chipsRef = useRef<HTMLDivElement>(null)
 
   const set = <K extends keyof Filters>(key: K, value: Filters[K]) => setF(cur => ({ ...cur, [key]: value }))
+  const activeGroup = groupBySlug(groupSlug)
   const activeType = typeBySlug(typeSlug)
-
-  /* ---------- tür sekmeleri: sayılar tüm deneyimler üzerinden, filtrelerden bağımsız ---------- */
-  const tabs = useMemo<Tab[]>(() => {
-    const list = EXPERIENCE_TYPES.map(t => ({ type: t, count: experiences.filter(e => inType(e, t)).length }))
-    return [
-      { slug: ALL_EXPERIENCES.slug, label: ALL_EXPERIENCES.label, image: ALL_EXPERIENCES.image, count: experiences.length },
-      ...list
-        .filter(({ type, count }) => !type.hideWhenEmpty || count > 0 || type.slug === typeSlug)
-        .map(({ type, count }) => ({ slug: type.slug, label: type.label, image: type.image, word: type.word, count })),
-    ]
-  }, [experiences, typeSlug])
-  const activeSlug = typeSlug ?? ALL_EXPERIENCES.slug
-  const activeCount = tabs.find(t => t.slug === activeSlug)?.count ?? 0
-
-  /* ---------- manşet: yalnızca deneyimi olan türlerin kelimeleri döner ---------- */
-  const words = useMemo(() => tabs.filter(t => t.count > 0 && t.word).map(t => t.word!), [tabs])
-  const [wordIndex, setWordIndex] = useState(0)
-  useEffect(() => {
-    if (words.length < 2 || window.matchMedia('(prefers-reduced-motion: reduce)').matches) return
-    const id = window.setInterval(() => setWordIndex(i => (i + 1) % words.length), WORD_EVERY)
-    return () => window.clearInterval(id)
-  }, [words.length])
-  const word = words[wordIndex % Math.max(1, words.length)] ?? 'yeni bir rota'
-  const featured = experiences.find(e => e.photo) ?? null
+  const activeSlug = activeGroup?.slug ?? ALL_EXPERIENCES.slug
 
   /* ---------- adres çubuğu ve sekme başlığı ---------- */
   useEffect(() => {
     const qs = new URLSearchParams()
-    if (typeSlug) qs.set('tur', typeSlug)
+    const tur = typeSlug ?? groupSlug
+    if (tur) qs.set('tur', tur)
     if (q.trim()) qs.set('q', q.trim())
     window.history.replaceState(null, '', `${window.location.pathname}${qs.toString() ? `?${qs}` : ''}`)
-    document.title = activeType ? `${activeType.label} — Ahoy` : 'Deneyimler — Ahoy'
-  }, [typeSlug, q, activeType])
+    document.title = activeType ? `${activeType.label} — Ahoy` : activeGroup ? `${activeGroup.label} — Ahoy deneyimleri` : 'Deneyimler — Ahoy'
+  }, [typeSlug, groupSlug, q, activeType, activeGroup])
 
   useEffect(() => {
     const onDown = (e: MouseEvent) => {
@@ -170,57 +139,36 @@ export default function ExperiencesClient({ experiences, initialType, initialQue
     }
   }, [modal])
 
-  /* ---------- sekme şeridi: kaydırma okları, seçili kart görünür ---------- */
-  useEffect(() => {
-    const el = stripRef.current
-    if (!el) return
-    const update = () => setEdges({ left: el.scrollLeft > 8, right: el.scrollLeft + el.clientWidth < el.scrollWidth - 8 })
-    update()
-    el.addEventListener('scroll', update, { passive: true })
-    window.addEventListener('resize', update)
-    return () => {
-      el.removeEventListener('scroll', update)
-      window.removeEventListener('resize', update)
-    }
-  }, [tabs.length])
-
-  useEffect(() => {
-    const el = stripRef.current
-    const active = el?.querySelector<HTMLElement>('[aria-selected="true"]')
-    if (!el || !active) return
-    const left = active.offsetLeft - el.offsetLeft
-    if (left < el.scrollLeft || left + active.offsetWidth > el.scrollLeft + el.clientWidth) {
-      el.scrollTo({ left: left - (el.clientWidth - active.offsetWidth) / 2, behavior: 'smooth' })
-    }
-  }, [activeSlug])
-
-  const scrollStrip = (dir: number) => {
-    const el = stripRef.current
-    if (el) el.scrollBy({ left: dir * el.clientWidth * 0.8, behavior: 'smooth' })
-  }
-
-  /** Liste ekranın altında kaldıysa sekme şeridini yukarı alır: sekmeler görünür kalır, sonuçlar altında açılır. */
-  const selectType = (slug: string) => {
-    setTypeSlug(slug === ALL_EXPERIENCES.slug ? null : slug)
-    const results = resultsRef.current
-    const types = typesRef.current
-    if (!results || !types || results.getBoundingClientRect().top < window.innerHeight * 0.7) return
-    const nav = document.querySelector('.sh-nav')?.getBoundingClientRect().height ?? 96
-    window.scrollTo({ top: types.getBoundingClientRect().top + window.scrollY - nav - 8, behavior: 'smooth' })
+  /* ---------- ana başlıklar ---------- */
+  const selectGroup = (slug: string) => {
+    setGroupSlug(slug === ALL_EXPERIENCES.slug ? null : slug)
+    setTypeSlug(null)
   }
 
   const onTabKey = (e: KeyboardEvent<HTMLButtonElement>, index: number) => {
-    const last = tabs.length - 1
+    const last = HEADINGS.length - 1
     const next =
       e.key === 'ArrowRight' ? (index === last ? 0 : index + 1) : e.key === 'ArrowLeft' ? (index === 0 ? last : index - 1) : e.key === 'Home' ? 0 : e.key === 'End' ? last : null
     if (next == null) return
     e.preventDefault()
-    selectType(tabs[next]!.slug)
-    stripRef.current?.querySelectorAll<HTMLButtonElement>('[role="tab"]')[next]?.focus()
+    selectGroup(HEADINGS[next]!.slug)
+    tabsRef.current?.querySelectorAll<HTMLButtonElement>('[role="tab"]')[next]?.focus()
   }
 
   /* ---------- liste ---------- */
-  const scoped = useMemo(() => experiences.filter(e => inType(e, activeType)), [experiences, activeType])
+  const inGroup = useMemo(
+    () => (activeGroup ? experiences.filter(e => groupOf(e)?.slug === activeGroup.slug) : experiences),
+    [experiences, activeGroup],
+  )
+
+  /** Başlığın altındaki tür çipleri: yalnızca deneyimi olan türler (seçili olan her zaman görünür). */
+  const typeChips = useMemo(() => {
+    if (activeGroup && activeGroup.types.length < 2) return []
+    const pool = activeGroup ? activeGroup.types.map(slug => typeBySlug(slug)).filter((t): t is ExperienceType => !!t) : ALL_CHIP_TYPES
+    return pool.filter(t => t.slug === typeSlug || inGroup.some(e => inType(e, t)))
+  }, [activeGroup, inGroup, typeSlug])
+
+  const scoped = useMemo(() => inGroup.filter(e => inType(e, activeType)), [inGroup, activeType])
   const hasFreeCancel = scoped.some(e => e.freeCancellation)
   const hasPickup = scoped.some(e => e.pickup)
 
@@ -248,141 +196,95 @@ export default function ExperiencesClient({ experiences, initialType, initialQue
     }
   }, [scoped, q, f, bounds, sort])
 
+  /* ---------- çip şeridi: taşarsa kenarda ok ---------- */
+  useEffect(() => {
+    const el = chipsRef.current
+    if (!el) return
+    const update = () => setEdges({ left: el.scrollLeft > 8, right: el.scrollLeft + el.clientWidth < el.scrollWidth - 8 })
+    update()
+    el.addEventListener('scroll', update, { passive: true })
+    window.addEventListener('resize', update)
+    return () => {
+      el.removeEventListener('scroll', update)
+      window.removeEventListener('resize', update)
+    }
+  }, [typeChips.length, hasFreeCancel, hasPickup, inGroup.length])
+
+  const scrollChips = (dir: number) => {
+    const el = chipsRef.current
+    if (el) el.scrollBy({ left: dir * el.clientWidth * 0.7, behavior: 'smooth' })
+  }
+
   const moneyFmt = (n: number) => new Intl.NumberFormat('tr-TR', { style: 'currency', currency: bounds.currency, maximumFractionDigits: 0 }).format(n)
   const priceOn = !isFull(f.price, bounds.price)
-  const activeFilters = [f.duration !== 'all', priceOn, f.freeCancel, f.pickup, f.guests > 0].filter(Boolean).length
+  const durationOn = DURATIONS.find(d => d.value === f.duration && d.value !== 'all')
+  const activeFilters = [durationOn, priceOn, f.freeCancel, f.pickup, f.guests > 0].filter(Boolean).length
   const reset = () => {
     setF(blank)
     setQ('')
+    setTypeSlug(null)
   }
   const hasSample = experiences.some(e => e.sample)
-  const typeEmpty = activeCount === 0
-  const heading = activeType?.label ?? ALL_EXPERIENCES.label
-  const sub = activeType?.desc ?? ALL_EXPERIENCES.desc
-  const HeadIcon = typeIcon(activeSlug)
+  /** Başlık kartlarındaki sayılar: tüm deneyimler üzerinden, filtrelerden bağımsız. */
+  const headingCounts = useMemo(() => {
+    const counts: Record<string, number> = { [ALL_EXPERIENCES.slug]: experiences.length }
+    for (const e of experiences) {
+      const g = groupOf(e)
+      if (g) counts[g.slug] = (counts[g.slug] ?? 0) + 1
+    }
+    return counts
+  }, [experiences])
+  const headingEmpty = inGroup.length === 0
+  const scopeLabel = activeType?.label ?? activeGroup?.label ?? ALL_EXPERIENCES.label
 
   return (
     <div className="sh-home sh-xh">
-      {/* ---------- üst: banner + arama ---------- */}
-      <section className="sh-xh-hero">
+      {/* ---------- başlık, arama ve dört ana başlık ---------- */}
+      <section className="sh-xh-top">
         <div className="sh-container">
           <nav className="sh-crumbs" aria-label="Sayfa yolu">
             <Link href="/">Ana sayfa</Link>
             <span aria-hidden="true">/</span>
             <span aria-current="page">Deneyimler</span>
           </nav>
-          <div className="sh-xh-banner">
-            <Image src="/deneyimler/hero-deneyimler.webp" alt="" fill priority sizes="(max-width: 1280px) 100vw, 1280px" />
-            <div className="sh-xh-banner-in">
-              <p className="sh-xh-kicker">Ahoy deneyimleri</p>
-              <h1>
-                <span className="sr-only">Denizde {words.length ? joinWords(words) : 'yeni bir rota'} seni bekliyor</span>
-                <span aria-hidden="true">
-                  Denizde{' '}
-                  <span className="sh-xh-rot">
-                    <span key={word} className="sh-xh-rot-word">
-                      {word}
-                    </span>
-                    <svg key={`s-${word}`} className="sh-xh-swoosh" viewBox="0 0 300 20" preserveAspectRatio="none">
-                      <path d="M4 14 C 70 4, 190 2, 296 11" />
-                    </svg>
-                  </span>
-                  <br />
-                  seni bekliyor
-                </span>
-              </h1>
-              <p className="sh-xh-lede">Kaptanların düzenlediği turları, aktiviteleri ve dersleri keşfet; gününü seç, talebini gönder.</p>
-              <form
-                className="sh-xh-search"
-                role="search"
-                onSubmit={e => {
-                  e.preventDefault()
-                  resultsRef.current?.scrollIntoView({ behavior: 'smooth', block: 'start' })
-                }}
-              >
-                <Search size={20} strokeWidth={2} aria-hidden="true" />
-                <input value={q} onChange={e => setQ(e.target.value)} placeholder="Deneyim, koy ya da şehir ara" aria-label="Deneyim, koy ya da şehir ara" />
-                {q && (
-                  <button type="button" className="sh-xh-search-clear" onClick={() => setQ('')} aria-label="Aramayı temizle">
-                    <X size={16} strokeWidth={2.4} />
-                  </button>
-                )}
-                <button type="submit" className="sh-btn sh-btn--navy">
-                  Ara
-                </button>
-              </form>
-            </div>
-            {featured && (
-              <Link href={`/deneyimler/${featured.id}`} className="sh-xh-feature">
-                <span className="sh-xh-feature-img">
-                  <Image src={featured.photo!} alt="" fill sizes="88px" />
-                </span>
-                <span className="sh-xh-feature-body">
-                  <small>{featured.sample ? 'Örnek deneyim' : 'Keşfetmeye buradan başla'}</small>
-                  <b>{featured.title}</b>
-                  {featured.basePrice > 0 && (
-                    <span>
-                      {money(featured.basePrice, featured.currency)} · {priceUnitLabel(featured.pricingType)}
-                    </span>
-                  )}
-                </span>
-                <span className="sh-xh-feature-go" aria-hidden="true">
-                  <ArrowRight size={18} strokeWidth={2.4} />
-                </span>
-              </Link>
-            )}
-          </div>
-        </div>
-      </section>
 
-      {/* ---------- deneyim türleri (sekmeler) ---------- */}
-      <section className="sh-xh-types sh-x-reveal" ref={typesRef} aria-labelledby="xh-types-title">
-        <div className="sh-container">
-          <div className="sh-xh-types-head">
-            <h2 id="xh-types-title">Ne yapmak istersin?</h2>
-            {(edges.left || edges.right) && (
-              <div className="sh-xh-arrows">
-                <button type="button" className="sh-xh-arrow" onClick={() => scrollStrip(-1)} disabled={!edges.left} aria-label="Önceki türler">
-                  <ChevronLeft size={18} strokeWidth={2.4} />
+          <div className="sh-xh-title-row">
+            <h1>Deneyimler</h1>
+            <form className="sh-xh-search" role="search" onSubmit={e => e.preventDefault()}>
+              <Search size={20} strokeWidth={2} aria-hidden="true" />
+              <input value={q} onChange={e => setQ(e.target.value)} placeholder="Deneyim, koy ya da şehir ara" aria-label="Deneyim, koy ya da şehir ara" />
+              {q && (
+                <button type="button" className="sh-xh-search-clear" onClick={() => setQ('')} aria-label="Aramayı temizle">
+                  <X size={16} strokeWidth={2.4} />
                 </button>
-                <button type="button" className="sh-xh-arrow" onClick={() => scrollStrip(1)} disabled={!edges.right} aria-label="Sonraki türler">
-                  <ChevronRight size={18} strokeWidth={2.4} />
-                </button>
-              </div>
-            )}
+              )}
+              <button type="submit" className="sh-btn sh-btn--navy">
+                Ara
+              </button>
+            </form>
           </div>
-          <div className="sh-xt" ref={stripRef} role="tablist" aria-label="Deneyim türleri">
-            {tabs.map((t, i) => {
-              const on = t.slug === activeSlug
-              const Icon = typeIcon(t.slug)
-              const all = t.slug === ALL_EXPERIENCES.slug
+
+          <div className="sh-xh-cards" ref={tabsRef} role="tablist" aria-label="Deneyim başlıkları">
+            {HEADINGS.map((h, i) => {
+              const on = h.slug === activeSlug
+              const count = headingCounts[h.slug] ?? 0
               return (
                 <button
-                  key={t.slug}
-                  id={`xt-${t.slug}`}
+                  key={h.slug}
+                  id={`xh-tab-${h.slug}`}
                   type="button"
                   role="tab"
                   aria-selected={on}
                   aria-controls="xh-results"
                   tabIndex={on ? 0 : -1}
-                  className={`sh-xt-card${on ? ' is-on' : ''}${t.count === 0 ? ' is-empty' : ''}`}
-                  onClick={() => selectType(t.slug)}
+                  className={`sh-xh-card${on ? ' is-on' : ''}`}
+                  onClick={() => selectGroup(h.slug)}
                   onKeyDown={e => onTabKey(e, i)}
                 >
-                  <span className={`sh-xt-img${all ? ' sh-xt-img--all' : ''}`}>
-                    {all ? <Icon className="sh-xt-all-art" strokeWidth={1.1} aria-hidden="true" /> : <Image src={t.image} alt="" fill sizes="(max-width: 860px) 132px, 170px" />}
-                    <span className="sh-xt-ico" aria-hidden="true">
-                      <Icon size={16} strokeWidth={2.2} />
-                    </span>
-                    {on && (
-                      <span className="sh-xt-check" aria-hidden="true">
-                        <Check size={14} strokeWidth={3} />
-                      </span>
-                    )}
-                    <span className="sh-xt-cap">
-                      <span className="sh-xt-label">{t.label}</span>
-                      <span className="sh-xt-count">{t.count > 0 ? `${t.count} deneyim` : 'Henüz yok'}</span>
-                    </span>
+                  <Image src={h.image} alt="" fill sizes="(max-width: 860px) 46vw, 310px" />
+                  <span className="sh-xh-card-text">
+                    <span className="sh-xh-card-label">{h.label}</span>
+                    <span className="sh-xh-card-count">{count > 0 ? `${count} deneyim` : 'Henüz yok'}</span>
                   </span>
                 </button>
               )
@@ -391,202 +293,159 @@ export default function ExperiencesClient({ experiences, initialType, initialQue
         </div>
       </section>
 
-      {/* ---------- seçilen türün listesi ---------- */}
-      <section className="sh-xh-results" id="xh-results" ref={resultsRef} role="tabpanel" aria-labelledby={`xt-${activeSlug}`}>
+      {/* ---------- seçili başlığın listesi ---------- */}
+      <section className="sh-xh-results" id="xh-results" role="tabpanel" aria-labelledby={`xh-tab-${activeSlug}`}>
         <div className="sh-container">
-          <header className="sh-xh-head">
-            <div>
-              <h2>
-                <span className="sh-xh-head-ico" aria-hidden="true">
-                  <HeadIcon size={22} strokeWidth={2} />
-                </span>
-                {heading}
-              </h2>
-              <p>{sub}</p>
-            </div>
-            {!typeEmpty && (
-              <p className="sh-xh-count" aria-live="polite">
-                {filtered.length} deneyim
-              </p>
-            )}
-          </header>
-
-          {!typeEmpty && (
-            <div className="sh-xh-bar">
-              <div className="sh-xh-chips" role="group" aria-label="Filtreler">
-                <button type="button" className="sh-xh-chip sh-xh-chip--more" onClick={() => setModal(true)}>
-                  <SlidersHorizontal size={16} strokeWidth={2} aria-hidden="true" /> Filtreler
-                  {activeFilters > 0 && <span className="sh-xh-badge">{activeFilters}</span>}
-                </button>
-                {hasFreeCancel && (
-                  <button type="button" className={`sh-xh-chip${f.freeCancel ? ' is-on' : ''}`} aria-pressed={f.freeCancel} onClick={() => set('freeCancel', !f.freeCancel)}>
-                    Ücretsiz iptal
-                  </button>
-                )}
-                {hasPickup && (
-                  <button type="button" className={`sh-xh-chip${f.pickup ? ' is-on' : ''}`} aria-pressed={f.pickup} onClick={() => set('pickup', !f.pickup)}>
-                    Otelden alınma
-                  </button>
-                )}
-                {DURATIONS.slice(1).map(d => (
-                  <button
-                    key={d.value}
-                    type="button"
-                    className={`sh-xh-chip${f.duration === d.value ? ' is-on' : ''}`}
-                    aria-pressed={f.duration === d.value}
-                    onClick={() => set('duration', f.duration === d.value ? 'all' : d.value)}
-                  >
-                    {d.label}
-                  </button>
-                ))}
-                {priceOn && (
-                  <button type="button" className="sh-xh-chip is-on" onClick={() => set('price', bounds.price)}>
-                    {moneyFmt(f.price[0])} – {moneyFmt(f.price[1])} <X size={14} strokeWidth={2.4} aria-label="Kaldır" />
-                  </button>
-                )}
-                {f.guests > 0 && (
-                  <button type="button" className="sh-xh-chip is-on" onClick={() => set('guests', 0)}>
-                    {f.guests}+ kişi <X size={14} strokeWidth={2.4} aria-label="Kaldır" />
-                  </button>
-                )}
-              </div>
-
-              <div className="sh-xh-sort" ref={sortRef}>
-                <button type="button" className="sh-xh-sort-btn" onClick={() => setSortOpen(o => !o)} aria-haspopup="listbox" aria-expanded={sortOpen}>
-                  <ArrowDownWideNarrow size={16} strokeWidth={2} aria-hidden="true" />
-                  <span>
-                    Sırala: <b>{SORTS.find(s => s.value === sort)?.label}</b>
-                  </span>
-                </button>
-                {sortOpen && (
-                  <ul className="sh-pop sh-pop-list sh-xh-sort-list" role="listbox" aria-label="Sıralama">
-                    {SORTS.map(s => (
-                      <li key={s.value}>
-                        <button
-                          type="button"
-                          role="option"
-                          aria-selected={sort === s.value}
-                          className="sh-pop-item sh-xh-sort-item"
-                          onClick={() => {
-                            setSort(s.value)
-                            setSortOpen(false)
-                          }}
-                        >
-                          <b>{s.label}</b>
-                          {sort === s.value && <Check size={16} aria-hidden="true" />}
-                        </button>
-                      </li>
-                    ))}
-                  </ul>
-                )}
-              </div>
-            </div>
-          )}
-
-          {hasSample && !typeEmpty && (
-            <div className="sh-xh-note" role="note">
-              <Info size={20} strokeWidth={1.8} aria-hidden="true" />
-              <p>
-                Yayında henüz deneyim yok. Aşağıdaki <b>örnek deneyim</b>, kaptanların Kaptan Paneli’nden ekleyeceği deneyimlerin nasıl görüneceğini
-                gösterir; rezervasyona kapalıdır.
-              </p>
-            </div>
-          )}
-
-          {typeEmpty ? (
+          {headingEmpty ? (
             <div className="sh-xh-empty">
-              <span className="sh-xh-empty-img">
-                <Image src={activeType?.image ?? ALL_EXPERIENCES.image} alt="" fill sizes="160px" />
-              </span>
-              <h3>Bu türde henüz deneyim yok</h3>
-              <p>Kaptanlar {activeType ? `“${activeType.label.toLocaleLowerCase('tr')}”` : 'bu türde'} deneyim ekleyip yayına aldığında burada listelenecek.</p>
+              <h2>Bu başlıkta henüz deneyim yok</h2>
+              <p>{activeGroup?.desc} Kaptanlar bu başlıkta deneyim ekleyip yayına aldığında burada listelenecek.</p>
               <div className="sh-xh-empty-actions">
                 {experiences.length > 0 && (
-                  <button type="button" className="sh-btn sh-btn--navy" onClick={() => selectType(ALL_EXPERIENCES.slug)}>
+                  <button type="button" className="sh-btn sh-btn--navy" onClick={() => selectGroup(ALL_EXPERIENCES.slug)}>
                     Tüm deneyimleri gör
                   </button>
                 )}
-                <a href={CAPTAIN_APP_URL} className="sh-btn sh-btn--white">
-                  Deneyimini ekle <ArrowUpRight size={17} strokeWidth={2} aria-hidden="true" />
-                </a>
               </div>
-            </div>
-          ) : filtered.length > 0 ? (
-            <div className="sh-xc-grid">
-              {filtered.map(e => (
-                <ExperienceListCard key={e.id} exp={e} />
-              ))}
             </div>
           ) : (
-            <div className="sh-xh-empty">
-              <span className="sh-xh-empty-ico">
-                <Sparkles size={30} strokeWidth={1.6} />
-              </span>
-              <h3>{q.trim() ? `“${q.trim()}” için uygun deneyim bulunamadı` : 'Seçtiğin filtrelere uygun deneyim yok'}</h3>
-              <p>Filtreleri gevşetmeyi ya da farklı bir arama yapmayı deneyebilirsin.</p>
-              <div className="sh-xh-empty-actions">
-                <button type="button" className="sh-btn sh-btn--navy" onClick={reset}>
-                  <RotateCcw size={16} aria-hidden="true" /> Filtreleri temizle
-                </button>
+            <>
+              <div className={`sh-xh-chips-wrap${edges.left ? ' is-fade-l' : ''}${edges.right ? ' is-fade-r' : ''}`}>
+                {edges.left && (
+                  <button type="button" className="sh-xh-chips-arrow is-left" onClick={() => scrollChips(-1)} aria-label="Önceki filtreler">
+                    <ChevronLeft size={18} strokeWidth={2.4} />
+                  </button>
+                )}
+                <div className="sh-xh-chips" ref={chipsRef} role="group" aria-label="Türler ve filtreler">
+                  <button type="button" className="sh-xh-chip sh-xh-chip--filters" onClick={() => setModal(true)}>
+                    <SlidersHorizontal size={17} strokeWidth={2} aria-hidden="true" /> Filtreler
+                    {activeFilters > 0 && <span className="sh-xh-badge">{activeFilters}</span>}
+                  </button>
+                  {typeChips.map(t => {
+                    const on = t.slug === typeSlug
+                    return (
+                      <button key={t.slug} type="button" className={`sh-xh-chip${on ? ' is-on' : ''}`} aria-pressed={on} onClick={() => setTypeSlug(on ? null : t.slug)}>
+                        {t.label}
+                      </button>
+                    )
+                  })}
+                  {typeChips.length > 0 && (hasFreeCancel || hasPickup || activeFilters > 0) && <span className="sh-xh-chip-sep" aria-hidden="true" />}
+                  {hasFreeCancel && (
+                    <button type="button" className={`sh-xh-chip${f.freeCancel ? ' is-on' : ''}`} aria-pressed={f.freeCancel} onClick={() => set('freeCancel', !f.freeCancel)}>
+                      Ücretsiz iptal
+                    </button>
+                  )}
+                  {hasPickup && (
+                    <button type="button" className={`sh-xh-chip${f.pickup ? ' is-on' : ''}`} aria-pressed={f.pickup} onClick={() => set('pickup', !f.pickup)}>
+                      Otelden alınma
+                    </button>
+                  )}
+                  {durationOn && (
+                    <button type="button" className="sh-xh-chip is-on" onClick={() => set('duration', 'all')}>
+                      {durationOn.label} <X size={14} strokeWidth={2.4} aria-label="Kaldır" />
+                    </button>
+                  )}
+                  {priceOn && (
+                    <button type="button" className="sh-xh-chip is-on" onClick={() => set('price', bounds.price)}>
+                      {moneyFmt(f.price[0])} – {moneyFmt(f.price[1])} <X size={14} strokeWidth={2.4} aria-label="Kaldır" />
+                    </button>
+                  )}
+                  {f.guests > 0 && (
+                    <button type="button" className="sh-xh-chip is-on" onClick={() => set('guests', 0)}>
+                      {f.guests}+ kişi <X size={14} strokeWidth={2.4} aria-label="Kaldır" />
+                    </button>
+                  )}
+                </div>
+                {edges.right && (
+                  <button type="button" className="sh-xh-chips-arrow is-right" onClick={() => scrollChips(1)} aria-label="Sonraki filtreler">
+                    <ChevronRight size={18} strokeWidth={2.4} />
+                  </button>
+                )}
               </div>
-            </div>
+
+              <div className="sh-xh-countrow">
+                <p className="sh-xh-count" aria-live="polite">
+                  {q.trim() ? (
+                    <>
+                      “{q.trim()}” için <b>{filtered.length}</b> sonuç
+                    </>
+                  ) : (
+                    <>
+                      <b>{filtered.length}</b> sonuç: {scopeLabel}
+                    </>
+                  )}
+                </p>
+                <div className="sh-xh-sort" ref={sortRef}>
+                  <button type="button" className="sh-xh-sort-btn" onClick={() => setSortOpen(o => !o)} aria-haspopup="listbox" aria-expanded={sortOpen}>
+                    <span>
+                      Sırala: <b>{SORTS.find(s => s.value === sort)?.label}</b>
+                    </span>
+                    <ChevronDown size={16} strokeWidth={2.4} aria-hidden="true" />
+                  </button>
+                  {sortOpen && (
+                    <ul className="sh-pop sh-pop-list sh-xh-sort-list" role="listbox" aria-label="Sıralama">
+                      {SORTS.map(s => (
+                        <li key={s.value}>
+                          <button
+                            type="button"
+                            role="option"
+                            aria-selected={sort === s.value}
+                            className="sh-pop-item sh-xh-sort-item"
+                            onClick={() => {
+                              setSort(s.value)
+                              setSortOpen(false)
+                            }}
+                          >
+                            <b>{s.label}</b>
+                            {sort === s.value && <Check size={16} aria-hidden="true" />}
+                          </button>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+              </div>
+
+              {hasSample && (
+                <div className="sh-xh-note" role="note">
+                  <Info size={18} strokeWidth={2} aria-hidden="true" />
+                  <p>
+                    Yayında henüz deneyim yok. Aşağıdaki <b>örnek deneyim</b>, kaptanların ekleyeceği deneyimlerin nasıl görüneceğini gösterir;
+                    rezervasyona kapalıdır.
+                  </p>
+                </div>
+              )}
+
+              {filtered.length > 0 ? (
+                <div className="sh-xc-grid">
+                  {filtered.map(e => (
+                    <ExperienceListCard key={e.id} exp={e} />
+                  ))}
+                </div>
+              ) : (
+                <div className="sh-xh-empty">
+                  <h2>{q.trim() ? `“${q.trim()}” için uygun deneyim bulunamadı` : 'Seçtiğin filtrelere uygun deneyim yok'}</h2>
+                  <p>Filtreleri gevşetmeyi ya da farklı bir arama yapmayı deneyebilirsin.</p>
+                  <div className="sh-xh-empty-actions">
+                    <button type="button" className="sh-btn sh-btn--navy" onClick={reset}>
+                      <RotateCcw size={16} aria-hidden="true" /> Filtreleri temizle
+                    </button>
+                  </div>
+                </div>
+              )}
+            </>
           )}
+
+          <p className="sh-xh-captain">
+            <span>
+              <b>Deneyim düzenleyen bir kaptan mısın?</b> Turunu ya da aktiviteni Kaptan Paneli’nden ekle; onaylanınca burada listelenir.
+            </span>
+            <a href={CAPTAIN_APP_URL}>
+              Kaptan Paneli’ne git <ArrowUpRight size={16} strokeWidth={2.2} aria-hidden="true" />
+            </a>
+          </p>
         </div>
       </section>
-
-      {/* ---------- nasıl çalışır ---------- */}
-      <section className="sh-xh-how sh-x-reveal" aria-labelledby="xh-how-title">
-        <div className="sh-container">
-          <div className="sh-xh-how-in">
-            <p className="sh-xh-how-kicker">Nasıl çalışır?</p>
-            <h2 id="xh-how-title">Üç adımda denize</h2>
-            <ol className="sh-xh-steps">
-              {HOW.map(({ icon: StepIcon, title, text }, i) => (
-                <li key={title}>
-                  <span className="sh-xh-step-ico">
-                    <StepIcon size={24} strokeWidth={1.9} aria-hidden="true" />
-                    <i aria-hidden="true">{i + 1}</i>
-                  </span>
-                  <b>{title}</b>
-                  <p>{text}</p>
-                </li>
-              ))}
-            </ol>
-          </div>
-        </div>
-      </section>
-
-      {/* ---------- kaptanlar için ---------- */}
-      <section className="sh-xh-cta sh-x-reveal" aria-labelledby="xh-cta-title">
-        <div className="sh-container">
-          <div className="sh-xh-cta-in">
-            <div className="sh-xh-cta-text">
-              <p className="sh-xh-cta-kicker">
-                <Anchor size={15} strokeWidth={2.4} aria-hidden="true" /> Kaptanlar için
-              </p>
-              <h2 id="xh-cta-title">Deneyimini Ahoy’da yayınla.</h2>
-              <p>Düzenlediğin turu, aktiviteyi ya da dersi Kaptan Paneli’nden ekle; onaylanıp yayına alındığında bu sayfada listelenir.</p>
-              <a href={CAPTAIN_APP_URL} className="sh-btn sh-btn--white">
-                Kaptan Paneli’ne git <ArrowUpRight size={18} strokeWidth={2} aria-hidden="true" />
-              </a>
-            </div>
-            <div className="sh-xh-cta-art" aria-hidden="true">
-              <span className="sh-xh-polaroid sh-xh-polaroid--a">
-                <span>
-                  <Image src="/deneyimler/turler/dersler.webp" alt="" fill sizes="170px" />
-                </span>
-              </span>
-              <span className="sh-xh-polaroid sh-xh-polaroid--b">
-                <span>
-                  <Image src="/deneyimler/turler/ozel-deneyimler.webp" alt="" fill sizes="170px" />
-                </span>
-              </span>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      <SeaEdge />
 
       {modal &&
         createPortal(

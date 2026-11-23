@@ -2,7 +2,7 @@ import type { Metadata } from 'next'
 import ExperiencesClient from './ExperiencesClient'
 import { fetchExperiences } from '@/lib/api'
 import { SAMPLE_EXPERIENCE } from '@/lib/content/defaultExperience'
-import { typeBySlug } from '@/lib/content/experienceTypes'
+import { resolveTur } from '@/lib/content/experienceTypes'
 import { cardFromDetail, cardFromListItem } from '@/lib/experienceFormat'
 
 // Data comes from the live API — don't try to prerender at build time.
@@ -13,11 +13,12 @@ interface Props {
 }
 
 export async function generateMetadata({ searchParams }: Props): Promise<Metadata> {
-  const type = typeBySlug((await searchParams).tur)
+  const { group, type } = resolveTur((await searchParams).tur)
   if (type) return { title: `${type.label} — Ahoy`, description: type.desc }
+  if (group) return { title: `${group.label} — Ahoy deneyimleri`, description: group.desc }
   return {
     title: 'Deneyimler — Ahoy',
-    description: 'Türkiye kıyılarında günlük tekne turları, gün batımı, dalış, su sporları ve daha fazlası. Kaptanların düzenlediği deneyimleri keşfet.',
+    description: 'Türkiye kıyılarında özel tekne programları, günlük tekne turları, gün batımı, dalış ve su sporları. Kaptanların düzenlediği deneyimleri keşfet.',
   }
 }
 
@@ -26,5 +27,13 @@ export default async function DeneyimlerPage({ searchParams }: Props) {
   const { items } = await fetchExperiences({ limit: 100 })
   // Yayında deneyim yokken örnek deneyim gösterilir (rezervasyona kapalı, "Örnek" etiketli).
   const experiences = items.length > 0 ? items.map(cardFromListItem) : [cardFromDetail(SAMPLE_EXPERIENCE)]
-  return <ExperiencesClient experiences={experiences} initialType={typeBySlug(tur)?.slug ?? null} initialQuery={(q ?? city ?? '').trim()} />
+  const { group, type } = resolveTur(tur)
+  return (
+    <ExperiencesClient
+      experiences={experiences}
+      initialGroup={group?.slug ?? null}
+      initialType={type?.slug ?? null}
+      initialQuery={(q ?? city ?? '').trim()}
+    />
+  )
 }
