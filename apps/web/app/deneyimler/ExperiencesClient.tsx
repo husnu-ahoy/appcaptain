@@ -410,7 +410,7 @@ export default function ExperiencesClient({ experiences, initialGroup, initialTy
                 <div className="sh-xh-note" role="note">
                   <Info size={18} strokeWidth={2} aria-hidden="true" />
                   <p>
-                    Yayında henüz deneyim yok. Aşağıdaki <b>örnek deneyim</b>, kaptanların ekleyeceği deneyimlerin nasıl görüneceğini gösterir;
+                    Yayında henüz deneyim yok. Aşağıdaki <b>örnek deneyimler</b>, kaptanların ekleyeceği deneyimlerin nasıl görüneceğini gösterir;
                     rezervasyona kapalıdır.
                   </p>
                 </div>

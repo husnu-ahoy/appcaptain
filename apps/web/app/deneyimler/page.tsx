@@ -1,7 +1,7 @@
 import type { Metadata } from 'next'
 import ExperiencesClient from './ExperiencesClient'
 import { fetchExperiences } from '@/lib/api'
-import { SAMPLE_EXPERIENCE } from '@/lib/content/defaultExperience'
+import { SAMPLE_EXPERIENCES } from '@/lib/content/sampleExperiences'
 import { resolveTur } from '@/lib/content/experienceTypes'
 import { cardFromDetail, cardFromListItem } from '@/lib/experienceFormat'
 
@@ -25,8 +25,8 @@ export async function generateMetadata({ searchParams }: Props): Promise<Metadat
 export default async function DeneyimlerPage({ searchParams }: Props) {
   const { tur, q, city } = await searchParams
   const { items } = await fetchExperiences({ limit: 100 })
-  // Yayında deneyim yokken örnek deneyim gösterilir (rezervasyona kapalı, "Örnek" etiketli).
-  const experiences = items.length > 0 ? items.map(cardFromListItem) : [cardFromDetail(SAMPLE_EXPERIENCE)]
+  // Yayında deneyim yokken örnek deneyimler gösterilir (rezervasyona kapalı, "Örnek deneyim" etiketli).
+  const experiences = items.length > 0 ? items.map(cardFromListItem) : SAMPLE_EXPERIENCES.map(cardFromDetail)
   const { group, type } = resolveTur(tur)
   return (
     <ExperiencesClient

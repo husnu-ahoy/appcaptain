@@ -12,7 +12,7 @@ import {
 } from '@ahoy/shared'
 
 /**
- * Örnek deneyim. Kaptan panelindeki deneyim sihirbazının yedi adımındaki tüm
+ * İlk örnek deneyim (diğer 19 örnek sampleExperiences.ts içinde). Kaptan panelindeki deneyim sihirbazının yedi adımındaki tüm
  * alanlar doludur (kategori, başlık/açıklama, dahil/hariç, lojistik, fiyatlandırma,
  * iptal politikası, medya). Yayında gerçek bir deneyim yokken /deneyimler'de
  * "Örnek" etiketiyle gösterilir ve rezervasyona kapalıdır; veritabanında yer almaz.
@@ -139,8 +139,4 @@ export const SAMPLE_EXPERIENCE: ExperienceDTO = {
     },
   ],
   seasonalPricingRules: [{ id: 'ornek-sezon', label: 'Yüksek sezon', startDate: '2027-07-01', endDate: '2027-08-31', price: 1750 }],
-}
-
-export function isSampleExperience(id: string): boolean {
-  return id === SAMPLE_EXPERIENCE_ID
 }

@@ -13,7 +13,7 @@ import {
 } from '@ahoy/shared'
 import { dayOf } from '@/lib/bookingDisplay'
 import { formatMoney } from '@/lib/boatFormat'
-import { SAMPLE_EXPERIENCE_ID } from '@/lib/content/defaultExperience'
+import { isSampleExperience } from '@/lib/content/sampleExperiences'
 
 /* Deneyim sayfaları için biçim yardımcıları. Etiketler kaptan panelindeki sihirbazla aynıdır. */
 
@@ -214,7 +214,7 @@ export function cardFromDetail(e: ExperienceDTO): ExperienceCard {
     freeCancellation: isFreeCancellation(e.cancellationPolicy),
     pickup: e.pickupOffered,
     minAge: e.minAge,
-    sample: e.id === SAMPLE_EXPERIENCE_ID,
+    sample: isSampleExperience(e.id),
   }
 }
 

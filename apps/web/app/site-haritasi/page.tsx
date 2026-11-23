@@ -3,7 +3,7 @@ import Link from 'next/link'
 import { ArrowUpRight } from 'lucide-react'
 import { fetchBoats, fetchExperiences, fetchLocations } from '@/lib/api'
 import { getBlogPosts, isBlogPostPublished } from '@/lib/data'
-import { SAMPLE_EXPERIENCE } from '@/lib/content/defaultExperience'
+import { SAMPLE_EXPERIENCES } from '@/lib/content/sampleExperiences'
 import { EXPERIENCE_TYPES, typeHref } from '@/lib/content/experienceTypes'
 import { CAPTAIN_APP_URL, CAPTAIN_SIGNUP_URL } from '@/lib/siteLinks'
 import { cleanText } from '@/lib/boatFormat'
@@ -36,7 +36,7 @@ export default async function SiteHaritasiPage() {
   const expItems: Item[] =
     experiences.items.length > 0
       ? experiences.items.map(e => ({ href: `/deneyimler/${e.id}`, label: e.title }))
-      : [{ href: `/deneyimler/${SAMPLE_EXPERIENCE.id}`, label: SAMPLE_EXPERIENCE.title, note: 'Örnek' }]
+      : SAMPLE_EXPERIENCES.map(e => ({ href: `/deneyimler/${e.id}`, label: e.title, note: 'Örnek' }))
 
   const groups: Group[] = [
     {
