@@ -1,5 +1,6 @@
 import type { FastifyInstance, FastifyRequest } from "fastify";
 import { sendGuestMessageSchema } from "@ahoy/shared";
+import { assertTurnstile } from "../../../lib/turnstile.js";
 import { parseDetailed } from "../../../lib/validate.js";
 import * as service from "../services/customer-messaging.service.js";
 
@@ -27,7 +28,10 @@ export async function customerMessagingRoutes(app: FastifyInstance) {
     return reply.code(201).send({ message });
   });
 
+  // First message to a captain (a new conversation). Replies in an existing
+  // conversation above stay unchecked: one challenge per chat message is too much.
   app.post("/customer/boats/:id/messages", async (req, reply) => {
+    await assertTurnstile(req, "captain_message");
     const { content } = parseDetailed(sendGuestMessageSchema, req.body);
     const result = await service.startInquiry(idParam(req), req.customer!, content);
     return reply.code(201).send(result);

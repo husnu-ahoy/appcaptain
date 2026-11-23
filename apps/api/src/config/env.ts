@@ -79,6 +79,14 @@ const envSchema = z.object({
   // Public API base URL — used to build open-tracking pixel URLs in broadcast emails (no trailing slash)
   API_URL: z.string().default("http://localhost:4000"),
 
+  // Cloudflare Turnstile secret key (bot check on public forms, see lib/turnstile.ts).
+  // Optional: while it is empty, booking requests and first messages are accepted
+  // without a token, so the web can ship the widget before the API enforces it.
+  TURNSTILE_SECRET_KEY: z
+    .string()
+    .optional()
+    .transform((value) => value?.trim() || undefined),
+
   // Email (optional — skip sending gracefully if not configured)
   SMTP_HOST: z.string().optional(),
   SMTP_PORT: z.coerce.number().default(587),

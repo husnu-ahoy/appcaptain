@@ -25,6 +25,7 @@ import AuthModal from '@/components/auth/AuthModal'
 import HostAvatar from '@/components/listing/HostAvatar'
 import TripPickerModal, { tripIsComplete, type TripValue } from '@/components/listing/TripPickerModal'
 import { buildRules } from '@/components/listing/listingRules'
+import { useTurnstile } from '@/components/sh/Turnstile'
 import { fetchAvailability, submitBooking, type BlockedRange } from '@/lib/api'
 import { checkoutHref, depositRatio, estimatePrice, parseCheckoutParams } from '@/lib/bookingPrice'
 import { boatTypeLabel, formatDayMonth, formatLongDate, formatMoney, listingModelLabel, toISODate } from '@/lib/boatFormat'
@@ -79,6 +80,8 @@ export default function CheckoutClient({ boat, search }: Props) {
   const [userEmail, setUserEmail] = useState<string | null>(null)
   const [authOpen, setAuthOpen] = useState(false)
   const closeAuth = useCallback(() => setAuthOpen(false), [])
+  // Rezervasyon talebi girişsiz gönderilir; API'de TURNSTILE_SECRET_KEY varsa anahtarsız talep reddedilir.
+  const captcha = useTurnstile('booking')
 
   const ready = tripIsComplete(trip, hourly)
 
@@ -189,6 +192,7 @@ export default function CheckoutClient({ boat, search }: Props) {
     for (const n of [1, 3]) {
       if (!validateStep(n)) return goTo(n)
     }
+    if (!captcha.check()) return
     void submit()
   }
 
@@ -213,7 +217,7 @@ export default function CheckoutClient({ boat, search }: Props) {
         startTime: hourly ? trip.startTime : null,
         endTime: hourly ? trip.endTime : null,
         message: [form.message.trim(), payLines.join('\n')].filter(Boolean).join('\n\n'),
-      })
+      }, captcha.token)
       setDone(true)
       window.scrollTo({ top: 0, behavior: 'smooth' })
     } catch (e) {
@@ -221,6 +225,7 @@ export default function CheckoutClient({ boat, search }: Props) {
       setSubmitError(!raw || /fetch|network/i.test(raw) ? 'Bağlantı hatası oluştu. Lütfen tekrar dene.' : raw)
     } finally {
       setSubmitting(false)
+      captcha.reset() // anahtar tek kullanımlık: yeni deneme yeni doğrulama ister
     }
   }
 
@@ -602,6 +607,7 @@ export default function CheckoutClient({ boat, search }: Props) {
           <span>Rezervasyon şartlarını, iptal politikasını ve tekne kurallarını okudum, kabul ediyorum.</span>
         </label>
         {errors.agree && <p className="sh-co-err">{errors.agree}</p>}
+        {captcha.widget}
         {submitError && (
           <p className="sh-co-err" role="alert">
             {submitError}

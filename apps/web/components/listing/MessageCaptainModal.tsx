@@ -4,6 +4,7 @@ import Link from 'next/link'
 import { useEffect, useState } from 'react'
 import { createPortal } from 'react-dom'
 import { CircleCheck, Loader2, ShieldCheck, X } from 'lucide-react'
+import { useTurnstile } from '@/components/sh/Turnstile'
 import { sendBoatMessage } from '@/lib/api'
 import HostAvatar from './HostAvatar'
 
@@ -32,6 +33,8 @@ export default function MessageCaptainModal({ boatId, boatTitle, hostName, hostA
   const [sending, setSending] = useState(false)
   const [error, setError] = useState<string | null>(null)
   const [sentId, setSentId] = useState<string | null>(null)
+  // İlk mesaj yeni bir konuşma açar; API'de TURNSTILE_SECRET_KEY varsa anahtarsız mesaj reddedilir.
+  const captcha = useTurnstile('captain_message')
 
   useEffect(() => {
     document.body.style.overflow = 'hidden'
@@ -46,10 +49,11 @@ export default function MessageCaptainModal({ boatId, boatTitle, hostName, hostA
   const send = async () => {
     const content = text.trim()
     if (!content || sending) return
+    if (!captcha.check()) return
     setSending(true)
     setError(null)
     try {
-      const { conversationId } = await sendBoatMessage(boatId, content)
+      const { conversationId } = await sendBoatMessage(boatId, content, captcha.token)
       setSentId(conversationId)
     } catch (e) {
       if (e instanceof Error && e.message === 'AUTH') {
@@ -59,6 +63,7 @@ export default function MessageCaptainModal({ boatId, boatTitle, hostName, hostA
       setError(e instanceof Error ? e.message : 'Mesaj gönderilemedi, lütfen tekrar dene.')
     } finally {
       setSending(false)
+      captcha.reset() // anahtar tek kullanımlık
     }
   }
 
@@ -127,6 +132,8 @@ export default function MessageCaptainModal({ boatId, boatTitle, hostName, hostA
                 {text.length}/{MAX}
               </small>
             </label>
+
+            {captcha.widget}
 
             {error && <p className="sh-auth-error">{error}</p>}
 

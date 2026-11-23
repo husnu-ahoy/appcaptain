@@ -128,6 +128,7 @@ export function authErrorText(message: string): string {
   if (m.includes('weak') || m.includes('easy to guess') || m.includes('pwned')) return 'Bu şifre kolay tahmin edilebilir. Daha güçlü bir şifre seç.'
   if (m.includes('reauthentication') || m.includes('nonce')) return 'REAUTH'
   if (m.includes('rate limit') || m.includes('too many')) return 'Çok fazla deneme yapıldı. Lütfen biraz sonra tekrar dene.'
+  if (m.includes('captcha')) return 'Güvenlik doğrulaması geçmedi. Doğrulamayı tamamlayıp tekrar dene.'
   if (m.includes('session') && (m.includes('missing') || m.includes('expired'))) return 'Oturumunun süresi dolmuş. Lütfen yeniden giriş yap.'
   if (m.includes('fetch') || m.includes('network')) return 'Bağlantı kurulamadı. İnternet bağlantını kontrol edip tekrar dene.'
   return 'Değişiklik kaydedilemedi. Lütfen tekrar dene.'

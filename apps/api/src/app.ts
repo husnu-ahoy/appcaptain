@@ -7,6 +7,7 @@ import { customerAuthPlugin } from "./plugins/customer-auth.js";
 import { adminAuthPlugin } from "./plugins/admin-auth.js";
 import { registerRoutes } from "./routes/index.js";
 import { HttpError } from "./lib/errors.js";
+import { turnstileMode } from "./lib/turnstile.js";
 import { captainOrigins, adminOrigins, webOrigins, env } from "./config/env.js";
 
 const SAFE_METHODS = new Set(["GET", "HEAD", "OPTIONS"]);
@@ -24,6 +25,12 @@ export async function buildApp() {
     // req.ip (audit logs, rate limits) is the visitor rather than the proxy.
     trustProxy: process.env.VERCEL === "1",
   });
+
+  if (isDeployed && turnstileMode === "off") {
+    app.log.warn("TURNSTILE_SECRET_KEY is not set: booking requests and first messages are accepted without a Turnstile check");
+  } else if (turnstileMode === "test-key-ignored") {
+    app.log.error("TURNSTILE_SECRET_KEY is a Cloudflare test key, which lets any script through: Turnstile checks stay off until the widget's real secret key is set");
+  }
 
   // Known production/local origins that are always allowed, merged with the
   // env-driven CAPTAIN_ORIGIN/ADMIN_ORIGIN/WEB_ORIGIN lists (deduped) so the

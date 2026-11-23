@@ -958,6 +958,14 @@ body:has(.sh-bk-top.is-visible) .sh-nav { transform: translateY(-100%); }
 .sh-auth-pw button:hover { background: #F5F5F5; color: var(--sh-ink); }
 .sh-auth-forgot { align-self: flex-start; margin-top: -2px; font-size: 14px; }
 .sh-auth-error { padding: 12px 14px; border-radius: 12px; background: #FDEEEC; color: #B4321F; font-size: 14px; font-weight: 600; line-height: 20px; }
+
+/* Cloudflare Turnstile (components/sh/Turnstile.tsx) — kutu, widget yüklenene kadar yerini tutar */
+.sh-turnstile { margin-top: 20px; }
+.sh-turnstile-box { min-height: 65px; }
+.sh-turnstile-note { margin-top: 8px; font-size: 14px; line-height: 20px; font-weight: 600; color: #C13515; }
+.sh-auth-form .sh-turnstile { margin-top: 0; }
+.sh-msg-body .sh-turnstile { margin-top: 16px; }
+.sh-set-fields ~ .sh-turnstile { max-width: 560px; margin-top: 16px; }
 .sh-auth-submit { display: inline-flex; align-items: center; justify-content: center; gap: 10px; width: 100%; height: 56px; margin-top: 4px; border: none; border-radius: 12px; background: var(--sh-navy); font-family: var(--sh-sans); font-size: 17px; font-weight: 700; color: #fff; cursor: pointer; transition: background-color 0.15s; }
 .sh-auth-submit:hover { background: #12306A; }
 .sh-auth-submit:disabled { opacity: 0.7; cursor: default; }

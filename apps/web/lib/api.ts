@@ -134,11 +134,15 @@ export async function fetchAvailability(boatId: string): Promise<BlockedRange[]>
   return data.blockedRanges ?? [];
 }
 
-export async function submitBooking(input: CreateBookingInput): Promise<{ bookingId: string }> {
+/** `turnstileToken`: components/sh/Turnstile anahtarı (API'de TURNSTILE_SECRET_KEY varsa zorunlu). */
+export async function submitBooking(
+  input: CreateBookingInput,
+  turnstileToken?: string | null
+): Promise<{ bookingId: string }> {
   const res = await fetch(`${BASE}/bookings`, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(input),
+    body: JSON.stringify(turnstileToken ? { ...input, turnstileToken } : input),
   });
   if (!res.ok) {
     const err = await res.json().catch(() => ({}));
@@ -202,8 +206,15 @@ async function customerFetch<T>(path: string, init?: RequestInit): Promise<T> {
 }
 
 /** İlan sayfasından kaptana mesaj — aynı tekne için açık konuşma varsa ona eklenir. */
-export async function sendBoatMessage(boatId: string, content: string): Promise<{ conversationId: string }> {
-  return customerFetch(`/customer/boats/${boatId}/messages`, { method: "POST", body: JSON.stringify({ content }) });
+export async function sendBoatMessage(
+  boatId: string,
+  content: string,
+  turnstileToken?: string | null
+): Promise<{ conversationId: string }> {
+  return customerFetch(`/customer/boats/${boatId}/messages`, {
+    method: "POST",
+    body: JSON.stringify(turnstileToken ? { content, turnstileToken } : { content }),
+  });
 }
 
 export async function fetchMyConversations(): Promise<GuestConversationDTO[]> {

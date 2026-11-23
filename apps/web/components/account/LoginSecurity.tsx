@@ -3,6 +3,7 @@
 import { useRouter } from 'next/navigation'
 import { useEffect, useState, type FormEvent } from 'react'
 import { Eye, EyeOff, KeyRound } from 'lucide-react'
+import { useTurnstile } from '@/components/sh/Turnstile'
 import { useSessionUser } from '@/lib/favorites'
 import { PASSWORD_RECOVERY_EVENT, clearPasswordRecovery, isPasswordRecovery, supabase } from '@/lib/supabase'
 import { SUPPORT, authErrorText, loginProviders } from '@/lib/account'
@@ -150,6 +151,8 @@ function PasswordForm({ email, onSaved }: { email: string | null; onSaved: () =>
   const [error, setError] = useState<string | null>(null)
   const [needsReset, setNeedsReset] = useState(false)
   const [resetSent, setResetSent] = useState(false)
+  // Sıfırlama e-postası Supabase'de CAPTCHA koruması açıkken anahtar ister (giriş penceresiyle aynı).
+  const captcha = useTurnstile('auth')
 
   const submit = async (e: FormEvent) => {
     e.preventDefault()
@@ -171,9 +174,14 @@ function PasswordForm({ email, onSaved }: { email: string | null; onSaved: () =>
 
   const sendReset = async () => {
     if (!email) return
+    if (!captcha.check()) return
     setSaving(true)
-    const { error: err } = await supabase.auth.resetPasswordForEmail(email, { redirectTo: `${window.location.origin}/hesabim` })
+    const { error: err } = await supabase.auth.resetPasswordForEmail(email, {
+      redirectTo: `${window.location.origin}/hesabim`,
+      captchaToken: captcha.token ?? undefined,
+    })
     setSaving(false)
+    captcha.reset() // anahtar tek kullanımlık
     if (err) return setError(authErrorText(err.message))
     setResetSent(true)
     setError(null)
@@ -214,6 +222,7 @@ function PasswordForm({ email, onSaved }: { email: string | null; onSaved: () =>
           {error}
         </p>
       )}
+      {needsReset && email && captcha.widget}
       <div className="sh-set-actions">
         {needsReset && email ? (
           <button type="button" className="sh-set-save" onClick={() => void sendReset()} disabled={saving}>

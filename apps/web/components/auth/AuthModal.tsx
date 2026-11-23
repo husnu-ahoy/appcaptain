@@ -5,6 +5,7 @@ import { useEffect, useState, type FormEvent } from 'react'
 import { createPortal } from 'react-dom'
 import { ArrowLeft, ArrowRight, Eye, EyeOff, Gift, Loader2, MailCheck, ShieldCheck, X } from 'lucide-react'
 import { IconBrandAppleFilled } from '@tabler/icons-react'
+import { useTurnstile } from '@/components/sh/Turnstile'
 import { supabase } from '@/lib/supabase'
 
 /**
@@ -51,6 +52,7 @@ function trError(message: string): string {
   if (m.includes('at least 6')) return 'Şifre en az 6 karakter olmalı.'
   if (m.includes('rate limit') || m.includes('too many')) return 'Çok fazla deneme yapıldı. Lütfen biraz sonra tekrar dene.'
   if (m.includes('provider is not enabled')) return 'Bu giriş yöntemi şu an kullanılamıyor.'
+  if (m.includes('captcha')) return 'Güvenlik doğrulaması geçmedi. Doğrulamayı tamamlayıp tekrar dene.'
   return message
 }
 
@@ -64,6 +66,8 @@ export default function AuthModal({ initialMode = 'signin', reason, onClose, onS
   const [sent, setSent] = useState<string | null>(null)
   const [providers, setProviders] = useState<Provider[]>([])
   const [mounted, setMounted] = useState(false)
+  // Şifreli giriş, kayıt ve sıfırlama: Supabase'de CAPTCHA koruması açıksa anahtarı Supabase doğrular.
+  const captcha = useTurnstile('auth')
 
   useEffect(() => {
     setMounted(true)
@@ -93,27 +97,37 @@ export default function AuthModal({ initialMode = 'signin', reason, onClose, onS
       return
     }
 
+    if (!captcha.check()) return
+    const captchaToken = captcha.token ?? undefined
     setLoading(true)
     if (step === 'reset') {
       const { error: err } = await supabase.auth.resetPasswordForEmail(email, {
         redirectTo: `${window.location.origin}/hesabim`,
+        captchaToken,
       })
       setLoading(false)
+      captcha.reset() // anahtar tek kullanımlık
       if (err) return setError(trError(err.message))
       setSent(`${email} adresine bir şifre sıfırlama bağlantısı gönderdik. Bağlantıya tıklayıp yeni şifreni belirleyebilirsin.`)
       return
     }
 
     if (step === 'signup') {
-      const { error: err } = await supabase.auth.signUp({ email, password, options: { emailRedirectTo: window.location.href } })
+      const { error: err } = await supabase.auth.signUp({
+        email,
+        password,
+        options: { emailRedirectTo: window.location.href, captchaToken },
+      })
       setLoading(false)
+      captcha.reset()
       if (err) return setError(trError(err.message))
       setSent(`${email} adresine bir doğrulama bağlantısı gönderdik. Hesabını onaylamak için bağlantıya tıkla.`)
       return
     }
 
-    const { error: err } = await supabase.auth.signInWithPassword({ email, password })
+    const { error: err } = await supabase.auth.signInWithPassword({ email, password, options: { captchaToken } })
     setLoading(false)
+    captcha.reset()
     if (err) return setError(trError(err.message))
     onSuccess?.()
     onClose()
@@ -230,6 +244,8 @@ export default function AuthModal({ initialMode = 'signin', reason, onClose, onS
                     Şifremi unuttum
                   </button>
                 )}
+
+                {step !== 'email' && captcha.widget}
 
                 {error && <p className="sh-auth-error">{error}</p>}
 

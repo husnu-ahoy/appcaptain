@@ -7,6 +7,7 @@ import {
   createBookingSchema,
   rejectBookingSchema,
 } from "@ahoy/shared";
+import { assertTurnstile } from "../../../lib/turnstile.js";
 import { parseDetailed } from "../../../lib/validate.js";
 import * as service from "../services/booking.service.js";
 
@@ -28,6 +29,8 @@ function listQuery(req: FastifyRequest): BookingListQuery {
 /** Public endpoints — no authentication required (guest booking requests). */
 export async function publicBookingRoutes(app: FastifyInstance) {
   app.post("/bookings", async (req, reply) => {
+    // Anonymous, and every PENDING request blocks the boat's calendar: the prime target for scripts.
+    await assertTurnstile(req, "booking");
     const body = parseDetailed(createBookingSchema, req.body) as CreateBookingInput;
     const booking = await service.createBooking(body);
     return reply.code(201).send({ booking });
