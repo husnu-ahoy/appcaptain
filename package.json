@@ -24,5 +24,11 @@
     "prettier": "^3.3.3",
     "turbo": "^2.3.3",
     "typescript": "^5.6.3"
+  },
+  "pnpm": {
+    "patchedDependencies": {
+      "next@15.5.29": "patches/next@15.5.29.patch",
+      "next@15.5.19": "patches/next@15.5.19.patch"
+    }
   }
 }

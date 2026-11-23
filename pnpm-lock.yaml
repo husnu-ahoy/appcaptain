@@ -4,6 +4,14 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+patchedDependencies:
+  next@15.5.19:
+    hash: 4noz3tnjfacdwvji32d7uknp6q
+    path: patches/next@15.5.19.patch
+  next@15.5.29:
+    hash: 4noz3tnjfacdwvji32d7uknp6q
+    path: patches/next@15.5.29.patch
+
 importers:
 
   .:
@@ -28,7 +36,7 @@ importers:
         version: link:../../packages/ui
       next:
         specifier: ^15.1.2
-        version: 15.5.19(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+        version: 15.5.19(patch_hash=4noz3tnjfacdwvji32d7uknp6q)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       react:
         specifier: ^18.3.1
         version: 18.3.1
@@ -177,7 +185,7 @@ importers:
         version: 5.101.0(react@18.3.1)
       next:
         specifier: ^15.5.29
-        version: 15.5.29(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+        version: 15.5.29(patch_hash=4noz3tnjfacdwvji32d7uknp6q)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       react:
         specifier: ^18.3.1
         version: 18.3.1
@@ -241,7 +249,7 @@ importers:
         version: 0.2.6(@fortawesome/fontawesome-svg-core@6.7.2)(react@18.3.1)
       next:
         specifier: ^15.1.2
-        version: 15.5.19(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+        version: 15.5.19(patch_hash=4noz3tnjfacdwvji32d7uknp6q)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       react:
         specifier: ^18.3.1
         version: 18.3.1
@@ -330,7 +338,7 @@ importers:
         version: 0.383.0(react@18.3.1)
       next:
         specifier: ^15.5.29
-        version: 15.5.29(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
+        version: 15.5.29(patch_hash=4noz3tnjfacdwvji32d7uknp6q)(react-dom@18.3.1(react@18.3.1))(react@18.3.1)
       react:
         specifier: ^18.3.1
         version: 18.3.1
@@ -14026,7 +14034,7 @@ snapshots:
 
   negotiator@0.6.3: {}
 
-  next@15.5.19(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
+  next@15.5.19(patch_hash=4noz3tnjfacdwvji32d7uknp6q)(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
     dependencies:
       '@next/env': 15.5.19
       '@swc/helpers': 0.5.15
@@ -14049,7 +14057,7 @@ snapshots:
       - '@babel/core'
       - babel-plugin-macros
 
-  next@15.5.29(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
+  next@15.5.29(patch_hash=4noz3tnjfacdwvji32d7uknp6q)(react-dom@18.3.1(react@18.3.1))(react@18.3.1):
     dependencies:
       '@next/env': 15.5.29
       '@swc/helpers': 0.5.15
